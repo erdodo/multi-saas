@@ -2,25 +2,50 @@
   "name": "multi-saas",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack --port 3000",
+    "dev:randevu": "npm run dev --prefix packages/randevu-modulu",
+    "dev:all": "concurrently --names \"MAIN,RANDEVU\" --prefix-colors \"blue,magenta\" \"npm run dev\" \"npm run dev:randevu\"",
+    "prebuild": "npx prisma generate",
+    "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:seed": "npx tsx src/scripts/seed-modules.ts",
+    "db:studio": "npx prisma studio"
   },
   "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.9",
+    "@types/react-big-calendar": "^1.16.3",
+    "bcryptjs": "^3.0.3",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "lucide-react": "^0.576.0",
     "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.30",
+    "process": "^0.11.10",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-big-calendar": "^1.19.4",
+    "react-dom": "19.2.3",
+    "sonner": "^2.0.7",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@prisma/client": "^5.22.0",
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
+    "dotenv": "^17.3.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack": "^5.105.3"
   }
 }

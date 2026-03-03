@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Multi-Tenant SaaS Platform (Core Repository)
 
-## Getting Started
+Bu döküman, birden fazla alt modüle sahip, geniş çaplı ve multi-tenant (çoklu kiracı) mimarisinde çalışacak SaaS projesinin ana reposunun mimarisini ve gereksinimlerini tanımlar.
 
-First, run the development server:
+## 🏗️ Mimari ve Teknoloji Yığını
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Core Framework:** Next.js (App Router, React)
+- **Veritabanı ORM:** Prisma
+- **İlk Aşama Veritabanı:** SQLite
+- **Hedef Veritabanı:** PostgreSQL
+- **Uygulama Tipi:** PWA (Progressive Web App) - Native mobil uygulama hissiyatı.
+- **Temel Konsept:** Ana repoda merkezi kimlik doğruluğu (Auth), setup akışı, profil ve tenant (işletme) yönetimi bulunur. Tüm ortak müşteri verileri bu repoda tutulur.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📌 Ana Repo Görevleri ve Özellikleri
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Kimlik Doğrulama ve Kurulum (Auth & Setup)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `Login`, `Register` ve şifre sıfırlama ekranları.
+- Kullanıcı ilk kez kayıt olduğunda devreye giren **Setup (Kurulum)** sihirbazı.
+- İşletme bilgileri ve kullanılacak modüllerin (Randevu, Emlak vb.) seçimi.
 
-## Learn More
+### 2. Yönlendirme ve Dashboard Mimarisi
 
-To learn more about Next.js, take a look at the following resources:
+- Kullanıcının yetkisi tek bir modüle ise (örn. sadece berber), giriş sonrası doğrudan `/app/randevu` yönlendirmesi.
+- Kullanıcı birden fazla modüle sahipse, giriş sonrası `/app` dizininde modül seçebileceği bir **Grid Menü (Uygulamalarım)** ekranı.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Progressive Web App (PWA)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Offline erişim, caching ve icon/manifest ayarları.
+- Web üzerinden girildiğinde "Uygulamayı Yükle" veya "Ana Ekrana Ekle" benzeri zorunlu/hatırlatıcı popup entegrasyonu.
+- Mobil cihazlarda Play Store / App Store hissiyatı verecek native tasarım kalıpları.
 
-## Deploy on Vercel
+### 4. API & Webhook Altyapısı
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Entegrasyonlar ve alt sistemlerin haberleşmesi için %100 API odaklı mimari.
+- Sisteme dışarıdan veya içeriden veri basılması/okunması için Webhook yönlendirmeleri.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 5. Ortak Veritabanı (Core Database)
+
+- **User / Tenant Modeli:** İşletmelerin ve işletme çalışanlarının hesapları.
+- **Customer (Müşteri) Modeli:** İşletmelerin sahip olduğu tüm müşteriler. Alt modüller bu ortak havuza bağlanır.
+
+---
+
+## 🧩 Alt Modüller (Daha Sonra Geliştirilecek İçerikler)
+
+### A. Randevu Modülü (`/app/randevu`)
+
+- **Hedef Kitle:** Berberler, özel öğretmenler, diyetisyenler, doktorlar vb.
+- **Özellikler:** Randevu oluşturma, işletme takvimi, müşteri takip, SMS/WhatsApp üzerinden randevu onay ve hatırlatma bildirimleri.
+
+### B. Emlak Modülü (`/app/emlak`)
+
+- **Hedef Kitle:** Emlakçılar, mülk yöneticileri.
+- **Özellikler:** Satılık/Kiralık listelemesi, güncel ve geçmiş sözleşmelerin tutulması, kiracı profili. (İleride Sahibinden.com entegrasyonu).
+
+### C. Ders Takip Modülü (`/app/ders`)
+
+- **Hedef Kitle:** Özel eğitim merkezleri, dershaneler.
+- **Özellikler:** Öğrenci yoklama sistemi, ders saati bildirimleri, finansal takip ve öğrenci gelişim takip grafikleri.
+
+---
+
+## 🚀 Geliştirme Yol Haritası (Roadmap)
+
+1. [ ] Next.js projesinin PWA desteğiyle ayağa kaldırılması.
+2. [ ] Prisma'nın SQLite ile yapılandırılması. `User`, `Tenant`, `Module` ve `Customer` şemalarının yazılması.
+3. [ ] Kimlik doğrulama sisteminin (Auth) ve Kurulum (Setup) ekranlarının geliştirilmesi.
+4. [ ] Grid Layout (Dashboard) ve modül tabanlı URL yönlendirmelerinin (Routing) inşası.
+5. [ ] Ortak API uçlarının (İşletme ve Müşteri yönetimi) yazılması ve Webhook temelinin atılması.
