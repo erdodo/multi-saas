@@ -43,8 +43,8 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://postgresql:postgresql@postgres:5432/postgresql
-      NEXTAUTH_SECRET: dev-secret-change-me
-      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: dev-secret-change-me123
+      NEXTAUTH_URL: https://saas.erdoganyesil.org
       NODE_ENV: development
     depends_on:
       postgres:
