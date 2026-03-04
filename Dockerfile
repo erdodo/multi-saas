@@ -2,7 +2,7 @@
 FROM node:24-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm install --frozen-lockfile || npm install
 
 # ---- build aşaması ----
 FROM node:24-alpine AS builder
