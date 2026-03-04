@@ -21,8 +21,9 @@ services:
       dockerfile: Dockerfile
     container_name: multi-saas-app
     restart: unless-stopped
-    ports:
-      - "3035:3000"
+    # Port dışa açık değil — cloudflared iç ağdan erişir
+    expose:
+      - "3000"
     environment:
       DATABASE_URL: "postgresql://postgresql:postgresql@postgres:5432/postgresql"
       NEXTAUTH_SECRET: "jV0sMKY0MQP7Vzkf9p1Gi04Ueb3LCwaHC2L0zq1ofFk="
@@ -39,6 +40,19 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: multi-saas-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - app
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
 
 volumes:
   postgres_data:
