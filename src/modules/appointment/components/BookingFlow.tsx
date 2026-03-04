@@ -124,7 +124,7 @@ export default function BookingFlow({
   };
 
   return (
-    <div className="bg-white rounded-[var(--brand-radius,16px)] shadow-sm border border-neutral-200 overflow-hidden">
+    <div className="bg-white rounded-(--brand-card-radius) shadow-sm border border-neutral-200 overflow-hidden">
       {/* Steps Header */}
       <div className="bg-neutral-50 px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
         <div className="flex gap-2 text-sm font-medium">
@@ -179,7 +179,7 @@ export default function BookingFlow({
                 <button
                   key={service.id}
                   onClick={() => handleServiceSelect(service.id)}
-                  className="w-full flex items-center justify-between p-4 border rounded-xl hover:border-blue-500 hover:ring-1 hover:ring-blue-500 transition-all text-left group"
+                  className="w-full flex items-center justify-between p-4 border rounded-[var(--brand-radius,12px)] hover:border-blue-500 hover:ring-1 hover:ring-blue-500 transition-all text-left group"
                 >
                   <div>
                     <div className="font-medium text-lg">{service.name}</div>
@@ -315,7 +315,7 @@ export default function BookingFlow({
               <h2 className="text-xl font-semibold">Kişisel Bilgileriniz</h2>
             </div>
 
-            <div className="bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 p-4 rounded-[var(--brand-radius,12px)] mb-6 text-sm text-[var(--brand-primary,#1e3a8a)]">
+            <div className="bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 p-4 rounded-(--brand-card-radius) mb-6 text-sm text-[var(--brand-primary,#1e3a8a)]">
               <div className="font-semibold mb-1">Randevu Özeti:</div>
               <div>
                 Hizmet: {selectedService?.name} ({selectedService?.duration} dk)

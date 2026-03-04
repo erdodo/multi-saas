@@ -8,35 +8,42 @@ datasource db {
 }
 
 model Tenant {
-  id                String             @id @default(uuid())
-  name              String
-  slug              String?            @unique
-  domain            String?            @unique
-  setupCompleted    Boolean            @default(false)
-  isActive          Boolean            @default(true)
-  timezone          String             @default("Europe/Istanbul")
-  phone             String?
-  address           String?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  siteTitle         String?
-  logoUrl           String?
-  faviconUrl        String?
-  primaryColor      String?            @default("#3b82f6")
-  secondaryColor    String?            @default("#6366f1")
-  accentColor       String?            @default("#10b981")
-  textOnPrimary     String?            @default("#ffffff")
-  fontFamily        String?            @default("inter")
-  borderRadius      String?            @default("md")
-  darkMode          Boolean            @default(false)
+  id                    String                 @id @default(uuid())
+  name                  String
+  slug                  String?                @unique
+  domain                String?                @unique
+  setupCompleted        Boolean                @default(false)
+  isActive              Boolean                @default(true)
+  timezone              String                 @default("Europe/Istanbul")
+  phone                 String?
+  address               String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  siteTitle             String?
+  logoUrl               String?
+  faviconUrl            String?
+  primaryColor          String?                @default("#3b82f6")
+  secondaryColor        String?                @default("#6366f1")
+  accentColor           String?                @default("#10b981")
+  textOnPrimary         String?                @default("#ffffff")
+  fontFamily            String?                @default("inter")
+  borderRadius          String?                @default("md")
+  darkMode              Boolean                @default(false)
   appointments          Appointment[]
   auditLogs             AuditLog[]
   availabilityRules     AvailabilityRule[]
   cancelPolicies        CancelPolicy?
   customers             Customer[]
   holidays              Holiday[]
+  leases                Lease[]
+  leasePayments         LeasePayment[]
   locations             Location[]
   notificationLogs      NotificationLog[]
+  properties            Property[]
+  propertyDocuments     PropertyDocument[]
+  propertyOwners        PropertyOwner[]
+  propertySubscriptions PropertySubscription[]
+  propertyTenants       PropertyTenant[]
   services              Service[]
   staffs                Staff[]
   staffBreaks           StaffBreak[]
@@ -44,13 +51,6 @@ model Tenant {
   settings              TenantSettings?
   timeOffs              TimeOff[]
   users                 User[]
-  properties            Property[]
-  propertyOwners        PropertyOwner[]
-  propertyTenants       PropertyTenant[]
-  leases                Lease[]
-  leasePayments         LeasePayment[]
-  propertySubscriptions PropertySubscription[]
-  propertyDocuments     PropertyDocument[]
 
   @@index([slug])
 }
@@ -178,9 +178,9 @@ model Staff {
   appointments      Appointment[]
   availability      Availability[]
   availabilityRules AvailabilityRule[]
-  staffBreaks       StaffBreak[]
   location          Location?          @relation(fields: [locationId], references: [id])
   tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  staffBreaks       StaffBreak[]
   staffServices     StaffService[]
   timeOffs          TimeOff[]
 
@@ -238,10 +238,10 @@ model StaffBreak {
   id        String  @id @default(uuid())
   staffId   String
   tenantId  String
-  dayOfWeek Int     // 0=Pazar, 1=Pazartesi ... 6=Cumartesi
-  startTime String  // "12:00"
-  endTime   String  // "13:00"
-  label     String? // "Öğle Arası"
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  label     String?
   staff     Staff   @relation(fields: [staffId], references: [id], onDelete: Cascade)
   tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
@@ -288,8 +288,8 @@ model Appointment {
   reminderSent  Boolean           @default(false)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  location      Location?         @relation(fields: [locationId], references: [id])
   customer      Customer?         @relation(fields: [customerId], references: [id])
+  location      Location?         @relation(fields: [locationId], references: [id])
   service       Service           @relation(fields: [serviceId], references: [id])
   staff         Staff             @relation(fields: [staffId], references: [id])
   tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -345,8 +345,8 @@ model AuditLog {
   ipAddress  String?
   userAgent  String?
   createdAt  DateTime @default(now())
-  user       User?    @relation(fields: [userId], references: [id])
   tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [id])
 
   @@index([tenantId, createdAt])
   @@index([entityType, entityId])
@@ -371,48 +371,44 @@ model TenantSettings {
   tenant                Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// EMLAK MODELLERİ
-// ═══════════════════════════════════════════════════════════════════
-
 model Property {
-  id              String                 @id @default(uuid())
-  tenantId        String
-  ownerId         String?
-  title           String
-  type            String                 @default("APARTMENT") // APARTMENT | HOUSE | LAND | SHOP | OFFICE | OTHER
-  status          String                 @default("AVAILABLE") // AVAILABLE | RENTED | FOR_SALE | SOLD | MAINTENANCE
-  city            String?
-  district        String?
-  neighborhood    String?
-  address         String?
-  postalCode      String?
-  latitude        Float?
-  longitude       Float?
-  squareMeters    Float?
-  roomCount       String?                // "2+1", "3+1", "4+2"...
-  floorNumber     Int?
-  totalFloors     Int?
-  hasElevator     Boolean                @default(false)
-  isFurnished     Boolean                @default(false)
-  hasParking      Boolean                @default(false)
-  hasBalcony      Boolean                @default(false)
-  buildingAge     Int?
-  heatingType     String?                // CENTRAL | INDIVIDUAL | FLOOR | STOVE | NONE
-  notes           String?
-  purchasePrice   Float?
-  purchaseCurrency String?              @default("TRY")
-  purchaseDate    DateTime?
-  marketValue     Float?
-  isActive        Boolean                @default(true)
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
-  tenant          Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  owner           PropertyOwner?         @relation(fields: [ownerId], references: [id])
-  leases          Lease[]
-  subscriptions   PropertySubscription[]
-  documents       PropertyDocument[]
-  photos          PropertyPhoto[]
+  id               String                 @id @default(uuid())
+  tenantId         String
+  ownerId          String?
+  title            String
+  type             String                 @default("APARTMENT")
+  status           String                 @default("AVAILABLE")
+  city             String?
+  district         String?
+  neighborhood     String?
+  address          String?
+  postalCode       String?
+  latitude         Float?
+  longitude        Float?
+  squareMeters     Float?
+  roomCount        String?
+  floorNumber      Int?
+  totalFloors      Int?
+  hasElevator      Boolean                @default(false)
+  isFurnished      Boolean                @default(false)
+  hasParking       Boolean                @default(false)
+  hasBalcony       Boolean                @default(false)
+  buildingAge      Int?
+  heatingType      String?
+  notes            String?
+  purchasePrice    Float?
+  purchaseCurrency String?                @default("TRY")
+  purchaseDate     DateTime?
+  marketValue      Float?
+  isActive         Boolean                @default(true)
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  leases           Lease[]
+  owner            PropertyOwner?         @relation(fields: [ownerId], references: [id])
+  tenant           Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  documents        PropertyDocument[]
+  photos           PropertyPhoto[]
+  subscriptions    PropertySubscription[]
 
   @@index([tenantId])
   @@index([status])
@@ -420,79 +416,79 @@ model Property {
 }
 
 model PropertyOwner {
-  id             String     @id @default(uuid())
-  tenantId       String
-  firstName      String
-  lastName       String
-  nationalId     String?    // T.C. Kimlik No
-  taxNo          String?    // Vergi No
-  phone          String?
-  phone2         String?
-  email          String?
-  address        String?
-  bankName       String?
-  iban           String?
+  id                String     @id @default(uuid())
+  tenantId          String
+  firstName         String
+  lastName          String
+  nationalId        String?
+  taxNo             String?
+  phone             String?
+  phone2            String?
+  email             String?
+  address           String?
+  bankName          String?
+  iban              String?
   accountHolderName String?
-  notes          String?
-  isActive       Boolean    @default(true)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  properties     Property[]
-  leases         Lease[]
+  notes             String?
+  isActive          Boolean    @default(true)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  leases            Lease[]
+  properties        Property[]
+  tenant            Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
 }
 
 model PropertyTenant {
-  id              String    @id @default(uuid())
-  tenantId        String
-  firstName       String
-  lastName        String
-  nationalId      String?
-  phone           String?
-  phone2          String?
-  email           String?
+  id               String   @id @default(uuid())
+  tenantId         String
+  firstName        String
+  lastName         String
+  nationalId       String?
+  phone            String?
+  phone2           String?
+  email            String?
   emergencyContact String?
-  emergencyPhone  String?
-  notes           String?
-  isActive        Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  leases          Lease[]
+  emergencyPhone   String?
+  notes            String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  leases           Lease[]
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
 }
 
 model Lease {
-  id               String         @id @default(uuid())
-  tenantId         String
-  propertyId       String
-  propertyTenantId String
-  ownerId          String?
-  startDate        DateTime
-  endDate          DateTime
-  rentAmount       Float
-  currency         String         @default("TRY")
-  paymentDayOfMonth Int           @default(1)  // Ayın kaçında ödenecek
-  depositAmount    Float          @default(0)
-  depositPaid      Boolean        @default(false)
+  id                String             @id @default(uuid())
+  tenantId          String
+  propertyId        String
+  propertyTenantId  String
+  ownerId           String?
+  startDate         DateTime
+  endDate           DateTime
+  rentAmount        Float
+  currency          String             @default("TRY")
+  paymentDayOfMonth Int                @default(1)
+  depositAmount     Float              @default(0)
+  depositPaid       Boolean            @default(false)
   depositReturnDate DateTime?
-  contractUrl      String?
-  status           String         @default("ACTIVE") // ACTIVE | ENDED | TERMINATED
+  contractUrl       String?
+  status            String             @default("ACTIVE")
   terminationReason String?
-  autoRenew        Boolean        @default(false)
-  renewalRate      Float?         // Yenileme zam oranı (%)
-  notes            String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  tenant           Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property         Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  propertyTenant   PropertyTenant @relation(fields: [propertyTenantId], references: [id])
-  owner            PropertyOwner? @relation(fields: [ownerId], references: [id])
-  payments         LeasePayment[]
-  documents        PropertyDocument[]
+  autoRenew         Boolean            @default(false)
+  renewalRate       Float?
+  notes             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  owner             PropertyOwner?     @relation(fields: [ownerId], references: [id])
+  property          Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyTenant    PropertyTenant     @relation(fields: [propertyTenantId], references: [id])
+  tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments          LeasePayment[]
+  documents         PropertyDocument[]
 
   @@index([tenantId])
   @@index([propertyId])
@@ -501,22 +497,22 @@ model Lease {
 }
 
 model LeasePayment {
-  id              String    @id @default(uuid())
-  tenantId        String
-  leaseId         String
-  dueDate         DateTime
-  amount          Float
-  currency        String    @default("TRY")
-  paidAt          DateTime?
-  paidAmount      Float?
-  paymentMethod   String?   // CASH | BANK_TRANSFER | CHECK | OTHER
-  receiptNo       String?
-  status          String    @default("PENDING") // PENDING | PAID | OVERDUE | PARTIAL
-  notes           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  lease           Lease     @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  id            String    @id @default(uuid())
+  tenantId      String
+  leaseId       String
+  dueDate       DateTime
+  amount        Float
+  currency      String    @default("TRY")
+  paidAt        DateTime?
+  paidAmount    Float?
+  paymentMethod String?
+  receiptNo     String?
+  status        String    @default("PENDING")
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lease         Lease     @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([leaseId])
@@ -525,44 +521,44 @@ model LeasePayment {
 }
 
 model PropertySubscription {
-  id              String    @id @default(uuid())
-  tenantId        String
-  propertyId      String
-  type            String    // ELECTRICITY | NATURAL_GAS | WATER | INTERNET | PHONE | CABLE_TV | OTHER
-  subscriberName  String?
-  subscriberNo    String?
-  provider        String?
-  contractNo      String?
+  id                     String    @id @default(uuid())
+  tenantId               String
+  propertyId             String
+  type                   String
+  subscriberName         String?
+  subscriberNo           String?
+  provider               String?
+  contractNo             String?
   estimatedMonthlyAmount Float?
-  currency        String    @default("TRY")
-  startDate       DateTime?
-  endDate         DateTime?
-  isActive        Boolean   @default(true)
-  notes           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property        Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  currency               String    @default("TRY")
+  startDate              DateTime?
+  endDate                DateTime?
+  isActive               Boolean   @default(true)
+  notes                  String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  property               Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  tenant                 Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([propertyId])
 }
 
 model PropertyDocument {
-  id               String    @id @default(uuid())
-  tenantId         String
-  propertyId       String?
-  leaseId          String?
-  type             String    // DEED | CONTRACT | INSURANCE | INVOICE | PERMIT | TAX | OTHER
-  title            String
-  fileUrl          String?
-  expiresAt        DateTime?
-  notes            String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property         Property? @relation(fields: [propertyId], references: [id])
-  lease            Lease?    @relation(fields: [leaseId], references: [id])
+  id         String    @id @default(uuid())
+  tenantId   String
+  propertyId String?
+  leaseId    String?
+  type       String
+  title      String
+  fileUrl    String?
+  expiresAt  DateTime?
+  notes      String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lease      Lease?    @relation(fields: [leaseId], references: [id])
+  property   Property? @relation(fields: [propertyId], references: [id])
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([propertyId])
@@ -570,14 +566,14 @@ model PropertyDocument {
 }
 
 model PropertyPhoto {
-  id          String   @id @default(uuid())
-  propertyId  String
-  url         String
-  caption     String?
-  isPrimary   Boolean  @default(false)
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid())
+  propertyId String
+  url        String
+  caption    String?
+  isPrimary  Boolean  @default(false)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId])
 }

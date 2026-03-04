@@ -141,8 +141,8 @@ export default async function RandevuDashboardLayout({
       </aside>
 
       {/* Right side */}
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-slate-50">
-        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-4 sm:px-6 flex-shrink-0 shadow-sm">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden bg-(--brand-bg)">
+        <header className="h-16 bg-(--brand-surface) border-b border-(--brand-border) flex items-center justify-between px-4 sm:px-6 flex-shrink-0 shadow-sm">
           <div className="flex items-center gap-3">
             <div
               className="w-7 h-7 flex items-center justify-center flex-shrink-0"
@@ -153,13 +153,13 @@ export default async function RandevuDashboardLayout({
                 style={{ color: b.textOnPrimary }}
               />
             </div>
-            <span className="text-sm font-semibold text-slate-700">
+            <span className="text-sm font-semibold text-(--brand-text)">
               {b.name}{" "}
             </span>
-            <span className="text-slate-300">·</span>
-            <span className="text-sm text-slate-400">Randevu</span>
+            <span className="text-(--brand-border)">·</span>
+            <span className="text-sm text-(--brand-text-muted)">Randevu</span>
           </div>
-          <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
+          <button className="p-2 text-(--brand-text-muted) hover:bg-(--brand-surface-2) rounded-lg transition-colors">
             <Bell className="w-5 h-5" />
           </button>
         </header>

@@ -63,7 +63,7 @@ export default function QuickServiceDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-[var(--brand-radius,16px)] shadow-2xl w-full max-w-md p-6 space-y-5 animate-in fade-in zoom-in-95">
+      <div className="bg-white rounded-(--brand-card-radius) shadow-2xl w-full max-w-md p-6 space-y-5 animate-in fade-in zoom-in-95">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-gray-900 text-lg">
             ✨ Hızlı Hizmet Ekle

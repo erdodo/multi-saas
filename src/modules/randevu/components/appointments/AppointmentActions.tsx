@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { Check } from "lucide-react";
 import {
   updateAppointmentStatus,
   cancelAppointment,
@@ -59,8 +60,9 @@ export default function AppointmentActions({
         <button
           onClick={() => handleAction("confirm")}
           disabled={loading}
-          className="text-xs bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 text-[var(--brand-primary,#1d4ed8)] hover:bg-opacity-20 px-2 py-1 rounded-[var(--brand-radius,6px)] transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-1 text-xs bg-[var(--brand-primary,#3b82f6)] text-white hover:opacity-90 px-2.5 py-1 rounded-[var(--brand-radius,6px)] transition-opacity disabled:opacity-50 font-medium"
         >
+          <Check className="w-3 h-3" />
           Onayla
         </button>
       )}
@@ -71,7 +73,7 @@ export default function AppointmentActions({
             disabled={loading}
             className="text-xs bg-green-50 text-green-700 hover:bg-green-100 px-2 py-1 rounded-[var(--brand-radius,6px)] transition-colors disabled:opacity-50"
           >
-            Tamamlandı
+            Tamamla
           </button>
           <button
             onClick={() => handleAction("no_show")}

@@ -17,8 +17,8 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Ayarlar</h1>
-        <p className="text-gray-500 text-sm">İşletme ve randevu sistemi yapılandırması</p>
+        <h1 className="text-2xl font-bold text-(--brand-text)">İŞletme Ayarları</h1>
+        <p className="text-(--brand-text-muted) text-sm">İşletme ve randevu sistemi yapılandırması</p>
       </div>
       <SettingsForm settings={settings} holidays={holidays} tenantId={tenantId} />
     </div>

@@ -106,7 +106,7 @@ export default function AppointmentLookup({ tenantSlug }: Props) {
               <a
                 key={appt.id}
                 href={`/${tenantSlug}/randevu-panel/book/${appt.id}`}
-                className="block bg-white rounded-[var(--brand-radius,12px)] border border-gray-200 p-4 hover:shadow-md hover:border-[var(--brand-primary,#bfdbfe)] transition-all"
+                className="block bg-white rounded-(--brand-card-radius) border border-gray-200 p-4 hover:shadow-md hover:border-[var(--brand-primary,#bfdbfe)] transition-all"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3 flex-1 min-w-0">

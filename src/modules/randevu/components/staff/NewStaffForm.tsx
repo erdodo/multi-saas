@@ -180,7 +180,7 @@ export default function NewStaffForm({
 
       <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">
         {/* Kişisel Bilgiler */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+        <div className="bg-white rounded-(--brand-card-radius) border border-gray-200 p-5 space-y-4">
           <h2 className="font-semibold text-gray-900 border-b pb-3">
             👤 Kişisel Bilgiler
           </h2>
@@ -241,7 +241,7 @@ export default function NewStaffForm({
 
         {/* Hizmetler */}
         <div
-          className={`bg-white rounded-[var(--brand-radius,12px)] border p-5 space-y-3 ${serviceError ? "border-red-400 ring-1 ring-red-300" : "border-gray-200"}`}
+          className={`bg-white rounded-(--brand-card-radius) border p-5 space-y-3 ${serviceError ? "border-red-400 ring-1 ring-red-300" : "border-gray-200"}`}
         >
           <div className="flex items-center justify-between border-b pb-3">
             <h2 className="font-semibold text-gray-900">💼 Hizmetler</h2>
@@ -295,7 +295,7 @@ export default function NewStaffForm({
         </div>
 
         {/* Çalışma Saatleri */}
-        <div className="bg-white rounded-[var(--brand-radius,12px)] border border-gray-200 p-5 space-y-3">
+        <div className="bg-white rounded-(--brand-card-radius) border border-gray-200 p-5 space-y-3">
           <h2 className="font-semibold text-gray-900 border-b pb-3">
             📅 Çalışma Saatleri
           </h2>
@@ -354,7 +354,7 @@ export default function NewStaffForm({
         </div>
 
         {/* İzin Günleri */}
-        <div className="bg-white rounded-[var(--brand-radius,12px)] border border-gray-200 p-5 space-y-3">
+        <div className="bg-white rounded-(--brand-card-radius) border border-gray-200 p-5 space-y-3">
           <h2 className="font-semibold text-gray-900 border-b pb-3">
             🏖️ İzin Tanımla
           </h2>
@@ -435,7 +435,7 @@ export default function NewStaffForm({
         </div>
 
         {/* Mola Tanımla */}
-        <div className="bg-white rounded-[var(--brand-radius,12px)] border border-gray-200 p-5 space-y-3">
+        <div className="bg-white rounded-(--brand-card-radius) border border-gray-200 p-5 space-y-3">
           <h2 className="font-semibold text-gray-900 border-b pb-3">
             <Coffee className="inline w-4 h-4 mr-1" />
             Mola Tanımla

@@ -230,7 +230,7 @@ export default function SettingsClient({ tenant, user }: Props) {
 
       {/* ── İşletme ── */}
       {tab === "business" && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6 max-w-lg space-y-4">
+        <div className="bg-white rounded-(--brand-card-radius) border border-slate-200 p-6 max-w-lg space-y-4">
           <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
             İşletme Bilgileri
           </h2>
@@ -274,7 +274,7 @@ export default function SettingsClient({ tenant, user }: Props) {
           {/* Sol — Form */}
           <div className="lg:col-span-3 space-y-6">
             {/* Site Kimliği */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+            <div className="bg-white rounded-(--brand-card-radius) border border-slate-200 p-6 space-y-4">
               <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
                 Site Kimliği
               </h2>
@@ -321,7 +321,7 @@ export default function SettingsClient({ tenant, user }: Props) {
             </div>
 
             {/* Renkler */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+            <div className="bg-white rounded-(--brand-card-radius) border border-slate-200 p-6 space-y-4">
               <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
                 Renk Paleti
               </h2>
@@ -354,7 +354,7 @@ export default function SettingsClient({ tenant, user }: Props) {
             </div>
 
             {/* Yazı Tipi */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-3">
+            <div className="bg-white rounded-(--brand-card-radius) border border-slate-200 p-6 space-y-3">
               <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
                 Yazı Tipi
               </h2>
@@ -381,9 +381,9 @@ export default function SettingsClient({ tenant, user }: Props) {
             </div>
 
             {/* Kenar Yarıçapı */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-3">
+            <div className="bg-white rounded-(--brand-card-radius) border border-slate-200 p-6 space-y-3">
               <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
-                Kenar Yuvarlama
+                Kenar Yuvarlatma
               </h2>
               <div className="grid grid-cols-5 gap-2">
                 {RADII.map((r) => (
@@ -411,7 +411,7 @@ export default function SettingsClient({ tenant, user }: Props) {
             </div>
 
             {/* Karanlık Mod */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <div className="bg-white rounded-(--brand-card-radius) border border-slate-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-slate-900">Karanlık Mod</p>
@@ -558,7 +558,7 @@ export default function SettingsClient({ tenant, user }: Props) {
 
       {/* ── Kullanıcı ── */}
       {tab === "user" && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6 max-w-lg space-y-4">
+        <div className="bg-white rounded-(--brand-card-radius) border border-slate-200 p-6 max-w-lg space-y-4">
           <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
             Hesap Bilgileri
           </h2>
@@ -579,7 +579,7 @@ export default function SettingsClient({ tenant, user }: Props) {
 
       {/* ── Şifre ── */}
       {tab === "password" && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6 max-w-lg space-y-4">
+        <div className="bg-white rounded-(--brand-card-radius) border border-slate-200 p-6 max-w-lg space-y-4">
           <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
             Şifre Değiştir
           </h2>

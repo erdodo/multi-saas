@@ -17,8 +17,8 @@ export default async function CalendarPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Takvim</h1>
-        <p className="text-gray-500 text-sm">Tüm randevuların aylık görünümü</p>
+        <h1 className="text-2xl font-bold text-(--brand-text)">Takvim</h1>
+        <p className="text-(--brand-text-muted) text-sm">Tüm randevuların aylık görünümü</p>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -31,7 +31,7 @@ export default async function CalendarPage() {
         ].map((s) => (
           <div
             key={s.label}
-            className="flex items-center gap-1.5 text-xs text-gray-600"
+            className="flex items-center gap-1.5 text-xs text-(--brand-text-muted)"
           >
             <span className={`w-2.5 h-2.5 rounded-full ${s.color}`} />
             {s.label}
@@ -39,7 +39,7 @@ export default async function CalendarPage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="bg-(--brand-surface) rounded-(--brand-card-radius) border border-(--brand-border) p-4">
         <CalendarView appointments={appointments} />
       </div>
     </div>

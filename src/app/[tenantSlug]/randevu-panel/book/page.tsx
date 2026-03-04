@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import BookingFlow from "@/modules/randevu/components/booking/BookingFlow";
 import { CalendarDays, MapPin, Phone } from "lucide-react";
+import { getTenantBranding, brandCssVars } from "@/lib/branding";
 
 interface Props {
   params: Promise<{ tenantSlug: string }>;
@@ -34,7 +35,7 @@ export default async function BookingPage({ params }: Props) {
   const primaryColor = tenant.primaryColor ?? "#10b981";
   const textOnPrimary = tenant.textOnPrimary ?? "#ffffff";
 
-  const [services, staffList, settings] = await Promise.all([
+  const [services, staffList, settings, b] = await Promise.all([
     prisma.service.findMany({
       where: { tenantId: tenant.id, isActive: true },
       orderBy: { name: "asc" },
@@ -48,6 +49,7 @@ export default async function BookingPage({ params }: Props) {
       orderBy: { name: "asc" },
     }),
     prisma.tenantSettings.findUnique({ where: { tenantId: tenant.id } }),
+    getTenantBranding(tenantSlug),
   ]);
 
   if (services.length === 0) {
@@ -76,7 +78,7 @@ export default async function BookingPage({ params }: Props) {
       : `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}99 100%)`;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50" style={brandCssVars(b)}>
       {/* Hero Header */}
       <header
         className="py-8 px-4 shadow-lg"
@@ -91,11 +93,11 @@ export default async function BookingPage({ params }: Props) {
                 alt={tenant.name}
                 width={52}
                 height={52}
-                className="rounded-[var(--brand-radius,16px)] object-cover flex-shrink-0 shadow-lg border-2 border-white/30"
+                className="rounded-(--brand-radius) object-cover shrink-0 shadow-lg border-2 border-white/30"
               />
             ) : (
               <div
-                className="w-13 h-13 rounded-[var(--brand-radius,16px)] flex items-center justify-center text-xl font-bold flex-shrink-0 shadow-lg border-2 border-white/30"
+                className="w-13 h-13 rounded-(--brand-radius) flex items-center justify-center text-xl font-bold shrink-0 shadow-lg border-2 border-white/30"
                 style={{
                   backgroundColor: "rgba(255,255,255,0.25)",
                   color: textOnPrimary,
@@ -169,15 +171,22 @@ export default async function BookingPage({ params }: Props) {
             id: s.id,
             name: s.name,
             bio: s.bio ?? null,
-            color: s.color ?? null,
+            color: s.color ?? "#3b82f6",
             serviceIds: s.staffServices.map((ss) => ss.serviceId),
             availableDays: s.availabilityRules.map((r) => r.dayOfWeek),
+            availabilityRules: s.availabilityRules.map((r) => ({
+              dayOfWeek: r.dayOfWeek,
+              startTime: r.startTime,
+              endTime: r.endTime,
+            })),
           }))}
           settings={{
             bookingWindowDays: settings?.bookingWindowDays ?? 60,
             slotIntervalMinutes: settings?.slotIntervalMinutes ?? 15,
             autoConfirm: settings?.autoConfirm ?? false,
           }}
+          primaryColor={primaryColor}
+          textOnPrimary={textOnPrimary}
         />
       </div>
     </div>

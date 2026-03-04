@@ -13,8 +13,8 @@ export default async function ServicesPage() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Hizmetler</h1>
-          <p className="text-gray-500 text-sm">{services.length} hizmet</p>
+          <h1 className="text-2xl font-bold text-(--brand-text)">Hizmetler</h1>
+          <p className="text-(--brand-text-muted) text-sm">{services.length} hizmet</p>
         </div>
       </div>
       <ServiceList services={services} tenantId={tenantId} />

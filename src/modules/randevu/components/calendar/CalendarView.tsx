@@ -99,7 +99,7 @@ export default function CalendarView({
           return (
             <div
               key={day.toISOString()}
-              className={`min-h-[80px] rounded-[var(--brand-radius,8px)] p-1.5 border transition-colors ${
+              className={`min-h-[80px] rounded-(--brand-card-radius) p-1.5 border transition-colors ${
                 inMonth
                   ? "bg-white border-gray-200"
                   : "bg-gray-50 border-gray-100"

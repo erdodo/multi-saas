@@ -114,7 +114,7 @@ export default function ServiceList({
 
       {showForm && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[var(--brand-radius,16px)] shadow-xl w-full max-w-lg p-6 space-y-4">
+          <div className="bg-white rounded-(--brand-card-radius) shadow-xl w-full max-w-lg p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
                 {editingId ? "Hizmet Düzenle" : "Yeni Hizmet"}
@@ -263,7 +263,7 @@ export default function ServiceList({
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-(--brand-card-radius) border border-gray-200 overflow-hidden">
         {services.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <div className="text-4xl mb-2">💼</div>

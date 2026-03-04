@@ -32,6 +32,8 @@ export interface ResolvedBranding {
   fontStack: string;
   /** CSS border-radius value ready to use */
   radiusPx: string;
+  /** CSS border-radius for cards/panels (capped — no pill shapes) */
+  cardRadiusPx: string;
 }
 
 // ─── Maps ─────────────────────────────────────────────────────────────────────
@@ -49,6 +51,15 @@ export const RADIUS_MAP: Record<string, string> = {
   md:   "8px",
   lg:   "16px",
   full: "9999px",
+};
+
+/** Same scale but capped at 24px — prevents pill-shaped cards/panels. */
+export const CARD_RADIUS_MAP: Record<string, string> = {
+  none: "0px",
+  sm:   "4px",
+  md:   "8px",
+  lg:   "16px",
+  full: "24px",
 };
 
 // ─── Defaults ─────────────────────────────────────────────────────────────────
@@ -105,7 +116,8 @@ export async function getTenantBranding(slug: string): Promise<ResolvedBranding>
       borderRadius,
       darkMode:       raw.darkMode ?? false,
       fontStack:      FONT_MAP[fontFamily]   ?? FONT_MAP.inter,
-      radiusPx:       RADIUS_MAP[borderRadius] ?? RADIUS_MAP.md,
+      radiusPx:       RADIUS_MAP[borderRadius]      ?? RADIUS_MAP.md,
+      cardRadiusPx:   CARD_RADIUS_MAP[borderRadius]  ?? CARD_RADIUS_MAP.md,
     };
   } catch {
     return {
@@ -116,6 +128,7 @@ export async function getTenantBranding(slug: string): Promise<ResolvedBranding>
       ...DEFAULTS,
       fontStack:      FONT_MAP[DEFAULTS.fontFamily],
       radiusPx:       RADIUS_MAP[DEFAULTS.borderRadius],
+      cardRadiusPx:   CARD_RADIUS_MAP[DEFAULTS.borderRadius],
     };
   }
 }
@@ -125,13 +138,21 @@ export async function getTenantBranding(slug: string): Promise<ResolvedBranding>
 /** Returns a React.CSSProperties object with all --brand-* custom properties. */
 export function brandCssVars(b: ResolvedBranding): React.CSSProperties {
   return {
-    "--brand-primary":        b.primaryColor,
-    "--brand-secondary":      b.secondaryColor,
-    "--brand-accent":         b.accentColor,
+    "--brand-primary":         b.primaryColor,
+    "--brand-secondary":       b.secondaryColor,
+    "--brand-accent":          b.accentColor,
     "--brand-text-on-primary": b.textOnPrimary,
-    "--brand-font":           b.fontStack,
-    "--brand-radius":         b.radiusPx,
-    fontFamily:               b.fontStack,
+    "--brand-font":            b.fontStack,
+    "--brand-radius":          b.radiusPx,
+    "--brand-card-radius":     b.cardRadiusPx,
+    // Semantic theme tokens — flip with darkMode
+    "--brand-bg":              b.darkMode ? "#0f172a" : "#f8fafc",
+    "--brand-surface":         b.darkMode ? "#1e293b" : "#ffffff",
+    "--brand-surface-2":       b.darkMode ? "#334155" : "#f1f5f9",
+    "--brand-text":            b.darkMode ? "#f1f5f9" : "#0f172a",
+    "--brand-text-muted":      b.darkMode ? "#94a3b8" : "#64748b",
+    "--brand-border":          b.darkMode ? "#475569" : "#e2e8f0",
+    fontFamily:                b.fontStack,
   } as React.CSSProperties;
 }
 

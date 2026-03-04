@@ -29,57 +29,57 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Randevular</h1>
-        <p className="text-gray-500 text-sm">{pagination?.total ?? 0} randevu bulundu</p>
+        <h1 className="text-2xl font-bold text-(--brand-text)">Randevular</h1>
+        <p className="text-(--brand-text-muted) text-sm">{pagination?.total ?? 0} randevu bulundu</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4 flex flex-wrap gap-3">
+      <div className="bg-(--brand-surface) rounded-(--brand-card-radius) border border-(--brand-border) p-4 flex flex-wrap gap-3">
         <form className="flex flex-wrap gap-3 w-full">
           <input name="search" defaultValue={sp.search} type="search" placeholder="Müşteri ara..."
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm ring-brand min-w-[200px]" />
+            className="border border-(--brand-border) bg-(--brand-surface) text-(--brand-text) rounded-lg px-3 py-2 text-sm ring-brand min-w-[200px]" />
           <select name="status" defaultValue={sp.status ?? ""}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm ring-brand">
+            className="border border-(--brand-border) bg-(--brand-surface) text-(--brand-text) rounded-lg px-3 py-2 text-sm ring-brand">
             <option value="">Tüm Durumlar</option>
             {Object.entries(APPOINTMENT_STATUS_LABELS).map(([k, v]) => (
               <option key={k} value={k}>{v}</option>
             ))}
           </select>
           <input name="dateFrom" type="date" defaultValue={sp.dateFrom}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm ring-brand" />
+            className="border border-(--brand-border) bg-(--brand-surface) text-(--brand-text) rounded-lg px-3 py-2 text-sm ring-brand" />
           <input name="dateTo" type="date" defaultValue={sp.dateTo}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm ring-brand" />
+            className="border border-(--brand-border) bg-(--brand-surface) text-(--brand-text) rounded-lg px-3 py-2 text-sm ring-brand" />
           <button type="submit" className="btn-brand transition-colors">Filtrele</button>
         </form>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+      <div className="bg-(--brand-surface) rounded-(--brand-card-radius) border border-(--brand-border) overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-(--brand-surface-2) border-b border-(--brand-border)">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-700">Müşteri</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-700">Hizmet</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-700">Uzman</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-700">Tarih & Saat</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-700">Durum</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-700">İşlemler</th>
+              <th className="text-left px-4 py-3 font-medium text-(--brand-text-muted)">Müşteri</th>
+              <th className="text-left px-4 py-3 font-medium text-(--brand-text-muted)">Hizmet</th>
+              <th className="text-left px-4 py-3 font-medium text-(--brand-text-muted)">Uzman</th>
+              <th className="text-left px-4 py-3 font-medium text-(--brand-text-muted)">Tarih &amp; Saat</th>
+              <th className="text-left px-4 py-3 font-medium text-(--brand-text-muted)">Durum</th>
+              <th className="text-right px-4 py-3 font-medium text-(--brand-text-muted)">İşlemler</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-(--brand-border)">
             {appointments.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-12 text-gray-400">
-                  <div className="text-3xl mb-2">📭</div>
+                <td colSpan={6} className="text-center py-12 text-(--brand-text-muted)">
+                  <div className="text-3xl mb-2">📦</div>
                   <p>Randevu bulunamadı</p>
                 </td>
               </tr>
             ) : appointments.map((appt) => (
-              <tr key={appt.id} className="hover:bg-gray-50">
+              <tr key={appt.id} className="hover:bg-(--brand-surface-2)">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-gray-900">
+                  <p className="font-medium text-(--brand-text)">
                     {appt.guestName ?? `${appt.customer?.firstName} ${appt.customer?.lastName}`}
                   </p>
                   {(appt.guestPhone ?? appt.customer?.phone) && (
-                    <p className="text-xs text-gray-400">{appt.guestPhone ?? appt.customer?.phone}</p>
+                    <p className="text-xs text-(--brand-text-muted)">{appt.guestPhone ?? appt.customer?.phone}</p>
                   )}
                 </td>
                 <td className="px-4 py-3">
@@ -88,8 +88,8 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
                     {appt.service.name}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-700">{appt.staff.name}</td>
-                <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                <td className="px-4 py-3 text-(--brand-text)">{appt.staff.name}</td>
+                <td className="px-4 py-3 text-(--brand-text) whitespace-nowrap">
                   {appt.startAt ? format(new Date(appt.startAt), "d MMM yyyy, HH:mm", { locale: tr }) : "—"}
                 </td>
                 <td className="px-4 py-3">
@@ -106,8 +106,8 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
         </table>
 
         {pagination && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            <p className="text-sm text-gray-500">Sayfa {pagination.page} / {pagination.totalPages}</p>
+          <div className="flex items-center justify-between px-4 py-3 border-t border-(--brand-border)">
+            <p className="text-sm text-(--brand-text-muted)">Sayfa {pagination.page} / {pagination.totalPages}</p>
             <div className="flex gap-2">
               {pagination.page > 1 && (
                 <a href={`?page=${pagination.page - 1}`} className="text-sm text-brand hover:underline">← Önceki</a>

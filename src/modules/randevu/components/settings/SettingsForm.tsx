@@ -65,7 +65,7 @@ export default function SettingsForm({ settings, holidays: initialHolidays, tena
   };
 
   const inp = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm";
-  const section = "bg-white rounded-xl border border-gray-200 p-5 space-y-4";
+  const section = "bg-white rounded-(--brand-card-radius) border border-gray-200 p-5 space-y-4";
 
   return (
     <div className="space-y-5 max-w-2xl">
@@ -121,7 +121,7 @@ export default function SettingsForm({ settings, holidays: initialHolidays, tena
       </div>
 
       <button onClick={handleSave} disabled={saving}
-        className="w-full btn-brand rounded-xl py-3 font-medium transition-colors">
+        className="w-full btn-brand rounded-[var(--brand-radius,12px)] py-3 font-medium transition-colors">
         {saving ? "Kaydediliyor..." : "💾 Ayarları Kaydet"}
       </button>
 

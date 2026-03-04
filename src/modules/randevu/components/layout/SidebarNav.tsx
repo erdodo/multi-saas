@@ -8,7 +8,6 @@ import {
   CalendarCheck2,
   Briefcase,
   Users,
-  BarChart3,
   Settings,
   UserCircle2,
 } from "lucide-react";
@@ -32,7 +31,6 @@ const NAV_ITEMS: NavItem[] = [
   { path: "/services", label: "Hizmetler", icon: Briefcase, exact: false },
   { path: "/staff", label: "Personel", icon: UserCircle2, exact: false },
   { path: "/customers", label: "Müşteriler", icon: Users, exact: false },
-  { path: "/reports", label: "Raporlar", icon: BarChart3, exact: false },
 ];
 
 interface Props {

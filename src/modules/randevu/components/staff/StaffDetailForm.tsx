@@ -58,7 +58,7 @@ export default function StaffDetailForm({ staff, services, tenantId }: Props) {
 
   return (
     <div className="space-y-5 max-w-2xl">
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
+      <div className="bg-white rounded-(--brand-card-radius) border border-gray-200 p-5">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold"
             style={{ backgroundColor: staff.color ?? "#3b82f6" }}>
@@ -74,7 +74,7 @@ export default function StaffDetailForm({ staff, services, tenantId }: Props) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
+      <div className="bg-white rounded-(--brand-card-radius) border border-gray-200 p-5 space-y-3">
         <h2 className="font-semibold text-gray-900 border-b pb-3">📅 Çalışma Saatleri</h2>
         {availability.map((a, i) => (
           <div key={i} className="grid grid-cols-[140px_1fr] gap-4 items-center">
@@ -102,7 +102,7 @@ export default function StaffDetailForm({ staff, services, tenantId }: Props) {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
+      <div className="bg-white rounded-(--brand-card-radius) border border-gray-200 p-5 space-y-3">
         <h2 className="font-semibold text-gray-900 border-b pb-3">🏖️ İzin Günleri</h2>
         <div className="grid grid-cols-2 gap-3">
           <div>
