@@ -10,26 +10,32 @@ import {
   Home,
 } from "lucide-react";
 
-interface Props { tenantSlug: string }
+interface Module { key: string; name: string }
+interface Props { tenantSlug: string; modules?: Module[] }
 
-export function NavLinks({ tenantSlug }: Props) {
+export function NavLinks({ tenantSlug, modules = [] }: Props) {
   const pathname = usePathname();
   const base     = `/${tenantSlug}/app`;
+  const moduleKeys = modules.map((m) => m.key);
 
   const NAV_ITEMS = [
-    { href: base,                label: "Uygulamalarım",  icon: LayoutDashboard, exact: true  },
-    { href: `${base}/customers`, label: "Müşteriler",     icon: Users,           exact: false },
-    { href: `${base}/calendar`,  label: "Takvim",         icon: CalendarDays,    exact: false },
-    { href: `${base}/randevu`,   label: "Randevu Modülü", icon: Scissors,        exact: false },
-    { href: `${base}/emlak`,     label: "Emlak Modülü",   icon: Home,            exact: false },
+    { href: base,                label: "Uygulamalarım",  icon: LayoutDashboard, exact: true,  moduleKey: null       },
+    { href: `${base}/customers`, label: "Müşteriler",     icon: Users,           exact: false, moduleKey: null       },
+    { href: `${base}/calendar`,  label: "Takvim",         icon: CalendarDays,    exact: false, moduleKey: null       },
+    { href: `${base}/randevu`,   label: "Randevu Modülü", icon: Scissors,        exact: false, moduleKey: "randevu"  },
+    { href: `${base}/emlak`,     label: "Emlak Modülü",   icon: Home,            exact: false, moduleKey: "emlak"    },
   ];
+
+  const visibleItems = NAV_ITEMS.filter(
+    ({ moduleKey }) => !moduleKey || moduleKeys.includes(moduleKey)
+  );
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname.startsWith(href);
 
   return (
     <>
-      {NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => (
+      {visibleItems.map(({ href, label, icon: Icon, exact }) => (
         <Link
           key={href}
           href={href}

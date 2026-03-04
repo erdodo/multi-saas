@@ -120,7 +120,10 @@ export default async function TenantAppLayout({ children, params }: Props) {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          <NavLinks tenantSlug={tenantSlug} />
+          <NavLinks
+            tenantSlug={tenantSlug}
+            modules={tenant.tenantModules.map((tm) => ({ key: tm.module.key, name: tm.module.name }))}
+          />
         </nav>
 
         <div className="p-4 border-t border-slate-200 dark:border-slate-700 space-y-1">

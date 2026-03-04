@@ -30,6 +30,22 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  // /:tenant/emlak-panel/** - oturum + setup tamamlanmış olmalı
+  const emlakPanelMatch = pathname.match(/^\/([^/]+)\/emlak-panel(\/.*)?$/);
+  if (emlakPanelMatch) {
+    if (!isLoggedIn) {
+      return NextResponse.redirect(new URL("/login", req.nextUrl));
+    }
+    if (!setupCompleted) {
+      return NextResponse.redirect(new URL("/setup", req.nextUrl));
+    }
+    const urlTenantSlug = emlakPanelMatch[1];
+    if (tenantSlug && urlTenantSlug !== tenantSlug) {
+      return NextResponse.redirect(new URL(`/${tenantSlug}/emlak-panel/dashboard`, req.nextUrl));
+    }
+    return NextResponse.next();
+  }
+
   // Eski /app/** yollarını yeni yapıya yönlendir
   if (pathname.startsWith("/app")) {
     if (!isLoggedIn) {
@@ -69,5 +85,13 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/:tenantSlug/app/:path*", "/app/:path*", "/setup", "/login", "/register"],
+  matcher: [
+    "/:tenantSlug/app/:path*",
+    "/:tenantSlug/emlak-panel/:path*",
+    "/:tenantSlug/randevu-panel/:path*",
+    "/app/:path*",
+    "/setup",
+    "/login",
+    "/register",
+  ],
 };
