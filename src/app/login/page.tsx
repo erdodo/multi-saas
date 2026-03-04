@@ -18,22 +18,39 @@ export default function LoginPage() {
 
     const formData = new FormData(e.currentTarget);
 
-    const result = await signIn("credentials", {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+        redirect: false,
+      });
 
-    setIsLoading(false);
+      // NextAuth v4 uyumluluk: result.error kontrolü
+      if (result?.error) {
+        setError("E-posta veya şifre hatalı. Lütfen tekrar deneyin.");
+        return;
+      }
 
-    if (result?.error) {
-      setError("E-posta veya şifre hatalı. Lütfen tekrar deneyin.");
-      return;
+      // Başarılı giriş
+      router.push("/app");
+      router.refresh();
+    } catch (err: unknown) {
+      // NextAuth v5 beta: hataları exception olarak fırlatır
+      const message =
+        err instanceof Error ? err.message : String(err);
+
+      if (
+        message.includes("CredentialsSignin") ||
+        message.includes("credentials") ||
+        message.includes("Credentials")
+      ) {
+        setError("E-posta veya şifre hatalı. Lütfen tekrar deneyin.");
+      } else {
+        setError("Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    // Middleware setupCompleted durumuna göre otomatik yönlendirecek.
-    router.push("/app");
-    router.refresh();
   };
 
   return (
