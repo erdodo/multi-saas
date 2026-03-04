@@ -25,13 +25,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Gerekli sistem araçları
 RUN apk add --no-cache libc6-compat
 
-# Prisma binary'leri için gerekli
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+# Tüm node_modules (prisma CLI dahil)
+COPY --from=builder /app/node_modules ./node_modules
 
 # Next.js build çıktısı
 COPY --from=builder /app/.next/standalone ./
