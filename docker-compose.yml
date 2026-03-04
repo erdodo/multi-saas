@@ -28,6 +28,8 @@ services:
       NEXTAUTH_SECRET: jV0sMKY0MQP7Vzkf9p1Gi04Ueb3LCwaHC2L0zq1ofFk=
       NEXTAUTH_URL: https://saas.erdoganyesil.org
       NODE_ENV: production
+      HOSTNAME: "0.0.0.0"
+      PORT: "3000"
     depends_on:
       postgres:
         condition: service_healthy
