@@ -81,5 +81,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  // Reverse proxy (Nginx/Cloudflare) arkasında HTTPS ile çalışmak için zorunlu.
+  // Olmadığında /api/auth/session 500 döndürür.
+  trustHost: true,
   secret: process.env.NEXTAUTH_SECRET,
 });
