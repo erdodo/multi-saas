@@ -25,7 +25,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 
 # Önce standalone output (kendi minimal node_modules'ıyla gelir)
 COPY --from=builder /app/.next/standalone ./
