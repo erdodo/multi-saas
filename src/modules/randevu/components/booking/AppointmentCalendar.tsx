@@ -163,18 +163,19 @@ export default function AppointmentCalendar({
                       ${isDisabled ? "text-gray-300 cursor-not-allowed" : "cursor-pointer"}
                       ${
                         isSelected
-                          ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+                          ? "bg-[var(--brand-primary,#2563eb)] text-[var(--brand-text-on-primary,#fff)] shadow-md"
                           : isToday && !isDisabled
-                            ? "ring-2 ring-blue-400 text-blue-600 hover:bg-blue-50"
+                            ? "ring-2 ring-[var(--brand-primary,#2563eb)] text-[var(--brand-primary,#2563eb)] hover:bg-slate-50"
                             : !isDisabled
-                              ? "hover:bg-blue-50 text-gray-700 hover:text-blue-700"
+                              ? "hover:bg-slate-50 text-gray-700 hover:text-[var(--brand-primary,#2563eb)]"
                               : "text-gray-300"
                       }
                     `}
+                    style={{ borderRadius: "var(--brand-radius, 8px)" }}
                   >
                     {format(day, "d")}
                     {isToday && !isSelected && (
-                      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-500" />
+                      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--brand-primary,#2563eb)]" />
                     )}
                   </button>
                 );
@@ -210,7 +211,7 @@ export default function AppointmentCalendar({
             {/* Slots */}
             {loadingSlots ? (
               <div className="flex flex-col items-center justify-center py-10 gap-3">
-                <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                <div className="w-8 h-8 border-4 border-slate-200 border-t-[var(--brand-primary,#2563eb)] rounded-full animate-spin" />
                 <p className="text-sm text-gray-400">
                   Müsait saatler yükleniyor...
                 </p>
@@ -223,7 +224,7 @@ export default function AppointmentCalendar({
                 </p>
                 <button
                   onClick={backToMonth}
-                  className="mt-3 text-sm text-blue-600 hover:underline"
+                  className="mt-3 text-sm text-[var(--brand-primary,#2563eb)] hover:underline"
                 >
                   Başka bir gün seç
                 </button>
@@ -242,9 +243,10 @@ export default function AppointmentCalendar({
                       ${
                         !slot.isAvailable
                           ? "bg-gray-100 text-gray-300 cursor-not-allowed line-through"
-                          : "bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white hover:shadow-md hover:shadow-blue-100 hover:-translate-y-0.5"
+                          : "bg-slate-50 text-[var(--brand-primary,#2563eb)] border border-slate-200 hover:bg-[var(--brand-primary,#2563eb)] hover:text-[var(--brand-text-on-primary,#fff)] hover:shadow-md hover:-translate-y-0.5"
                       }
                     `}
+                    style={{ borderRadius: "var(--brand-radius, 8px)" }}
                   >
                     {slot.time}
                   </button>

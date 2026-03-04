@@ -124,32 +124,46 @@ export default function BookingFlow({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden">
+    <div className="bg-white rounded-[var(--brand-radius,16px)] shadow-sm border border-neutral-200 overflow-hidden">
       {/* Steps Header */}
       <div className="bg-neutral-50 px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
         <div className="flex gap-2 text-sm font-medium">
           <span
             className={
-              step === "SERVICE" ? "text-blue-600" : "text-neutral-400"
+              step === "SERVICE"
+                ? "text-[var(--brand-primary,#2563eb)]"
+                : "text-neutral-400"
             }
           >
             1. Hizmet
           </span>
           <span className="text-neutral-300">/</span>
           <span
-            className={step === "STAFF" ? "text-blue-600" : "text-neutral-400"}
+            className={
+              step === "STAFF"
+                ? "text-[var(--brand-primary,#2563eb)]"
+                : "text-neutral-400"
+            }
           >
             2. Personel
           </span>
           <span className="text-neutral-300">/</span>
           <span
-            className={step === "DATE" ? "text-blue-600" : "text-neutral-400"}
+            className={
+              step === "DATE"
+                ? "text-[var(--brand-primary,#2563eb)]"
+                : "text-neutral-400"
+            }
           >
             3. Zaman
           </span>
           <span className="text-neutral-300">/</span>
           <span
-            className={step === "INFO" ? "text-blue-600" : "text-neutral-400"}
+            className={
+              step === "INFO"
+                ? "text-[var(--brand-primary,#2563eb)]"
+                : "text-neutral-400"
+            }
           >
             4. Bilgiler
           </span>
@@ -203,9 +217,9 @@ export default function BookingFlow({
                   <button
                     key={staff.id}
                     onClick={() => handleStaffSelect(staff.id)}
-                    className="w-full flex items-center gap-4 p-4 border rounded-xl hover:border-blue-500 hover:ring-1 hover:ring-blue-500 transition-all text-left"
+                    className="w-full flex items-center gap-4 p-4 border rounded-[var(--brand-radius,12px)] hover:border-[var(--brand-primary,#3b82f6)] hover:ring-1 hover:ring-[var(--brand-primary,#3b82f6)] transition-all text-left"
                   >
-                    <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
+                    <div className="w-12 h-12 bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 text-[var(--brand-primary,#2563eb)] rounded-full flex items-center justify-center font-bold text-lg">
                       {staff.name.charAt(0)}
                     </div>
                     <div>
@@ -241,7 +255,7 @@ export default function BookingFlow({
                 type="date"
                 min={new Date().toISOString().split("T")[0]} // Geçmişi engelle
                 onChange={handleDateSelect}
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full p-3 border rounded-[var(--brand-radius,8px)] focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)] focus:border-transparent outline-none"
               />
             </div>
 
@@ -273,7 +287,7 @@ export default function BookingFlow({
                           py-2 px-3 rounded-lg text-center font-medium transition-all
                           ${
                             slot.isAvailable
-                              ? "bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white cursor-pointer"
+                              ? "bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 text-[var(--brand-primary,#1d4ed8)] hover:opacity-80 cursor-pointer"
                               : "bg-neutral-100 text-neutral-400 cursor-not-allowed line-through"
                           }
                         `}
@@ -301,7 +315,7 @@ export default function BookingFlow({
               <h2 className="text-xl font-semibold">Kişisel Bilgileriniz</h2>
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-xl mb-6 text-sm text-blue-900">
+            <div className="bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 p-4 rounded-[var(--brand-radius,12px)] mb-6 text-sm text-[var(--brand-primary,#1e3a8a)]">
               <div className="font-semibold mb-1">Randevu Özeti:</div>
               <div>
                 Hizmet: {selectedService?.name} ({selectedService?.duration} dk)
@@ -326,7 +340,7 @@ export default function BookingFlow({
                 onChange={(e) =>
                   setState({ ...state, customerName: e.target.value })
                 }
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-3 border rounded-[var(--brand-radius,8px)] focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)] outline-none"
                 placeholder="Örn: Ahmet Yılmaz"
               />
             </div>
@@ -341,7 +355,7 @@ export default function BookingFlow({
                 onChange={(e) =>
                   setState({ ...state, customerPhone: e.target.value })
                 }
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-3 border rounded-[var(--brand-radius,8px)] focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)] outline-none"
                 placeholder="05XX XXX XX XX"
               />
             </div>
@@ -349,7 +363,7 @@ export default function BookingFlow({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50"
+              className="w-full bg-[var(--brand-primary,#2563eb)] hover:opacity-90 text-[var(--brand-text-on-primary,#fff)] font-medium py-3 rounded-[var(--brand-radius,8px)] transition-opacity disabled:opacity-50"
             >
               {isLoading ? "İşleniyor..." : "Randevuyu Onayla"}
             </button>
@@ -371,7 +385,7 @@ export default function BookingFlow({
             <div className="pt-6">
               <button
                 onClick={() => window.location.reload()}
-                className="text-blue-600 font-medium hover:underline cursor-pointer"
+                className="text-[var(--brand-primary,#2563eb)] font-medium hover:opacity-80 cursor-pointer"
               >
                 Yeni Bir Randevu Al
               </button>

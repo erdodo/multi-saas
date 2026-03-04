@@ -241,7 +241,7 @@ export default function NewStaffForm({
 
         {/* Hizmetler */}
         <div
-          className={`bg-white rounded-xl border p-5 space-y-3 ${serviceError ? "border-red-400 ring-1 ring-red-300" : "border-gray-200"}`}
+          className={`bg-white rounded-[var(--brand-radius,12px)] border p-5 space-y-3 ${serviceError ? "border-red-400 ring-1 ring-red-300" : "border-gray-200"}`}
         >
           <div className="flex items-center justify-between border-b pb-3">
             <h2 className="font-semibold text-gray-900">💼 Hizmetler</h2>
@@ -286,7 +286,7 @@ export default function NewStaffForm({
             <button
               type="button"
               onClick={() => setShowServiceDialog(true)}
-              className="inline-flex items-center gap-1.5 text-sm rounded-full px-3 py-1.5 border border-dashed border-blue-400 text-blue-600 hover:bg-blue-50 font-medium transition-all"
+              className="inline-flex items-center gap-1.5 text-sm rounded-[var(--brand-radius,9999px)] px-3 py-1.5 border border-dashed border-slate-300 text-[var(--brand-primary,#2563eb)] hover:bg-slate-50 font-medium transition-all"
             >
               <PlusCircle className="w-3.5 h-3.5" />
               {services.length === 0 ? "Hizmet tanımla" : "Yeni hizmet"}
@@ -295,7 +295,7 @@ export default function NewStaffForm({
         </div>
 
         {/* Çalışma Saatleri */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
+        <div className="bg-white rounded-[var(--brand-radius,12px)] border border-gray-200 p-5 space-y-3">
           <h2 className="font-semibold text-gray-900 border-b pb-3">
             📅 Çalışma Saatleri
           </h2>
@@ -354,7 +354,7 @@ export default function NewStaffForm({
         </div>
 
         {/* İzin Günleri */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
+        <div className="bg-white rounded-[var(--brand-radius,12px)] border border-gray-200 p-5 space-y-3">
           <h2 className="font-semibold text-gray-900 border-b pb-3">
             🏖️ İzin Tanımla
           </h2>
@@ -428,14 +428,14 @@ export default function NewStaffForm({
           <button
             type="button"
             onClick={addTimeOff}
-            className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium border border-blue-200 rounded-lg px-3 py-1.5 hover:bg-blue-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-[var(--brand-primary,#2563eb)] hover:opacity-80 font-medium border border-slate-200 rounded-[var(--brand-radius,8px)] px-3 py-1.5 hover:bg-slate-50 transition-colors"
           >
             <PlusCircle className="w-4 h-4" /> İzin Ekle
           </button>
         </div>
 
         {/* Mola Tanımla */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
+        <div className="bg-white rounded-[var(--brand-radius,12px)] border border-gray-200 p-5 space-y-3">
           <h2 className="font-semibold text-gray-900 border-b pb-3">
             <Coffee className="inline w-4 h-4 mr-1" />
             Mola Tanımla
@@ -537,7 +537,7 @@ export default function NewStaffForm({
         <button
           type="submit"
           disabled={saving}
-          className="w-full btn-brand rounded-xl py-3 font-medium transition-colors"
+          className="w-full btn-brand rounded-[var(--brand-radius,12px)] py-3 font-medium transition-colors"
         >
           {saving ? "Kaydediliyor..." : "➕ Personel Ekle"}
         </button>

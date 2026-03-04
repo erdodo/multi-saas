@@ -1,6 +1,7 @@
 import AppointmentLookup from "@/modules/randevu/components/appointments/AppointmentLookup";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { getTenantBranding, brandCssVars } from "@/lib/branding";
 
 interface Params {
   params: Promise<{ tenantSlug: string }>;
@@ -23,10 +24,21 @@ export default async function AppointmentLookupPage({ params }: Params) {
   });
   if (!tenant) notFound();
 
+  const b = await getTenantBranding(tenantSlug);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        ...brandCssVars(b),
+        background: `linear-gradient(135deg, #f8fafc 0%, ${b.primaryColor}15 100%)`,
+      }}
+    >
       <div className="w-full max-w-lg">
-        <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
+        <div
+          className="bg-white shadow-lg p-6 space-y-6"
+          style={{ borderRadius: b.radiusPx }}
+        >
           <div className="text-center">
             <div className="text-4xl mb-2">🔍</div>
             <h1 className="text-xl font-bold text-gray-900">Randevu Sorgula</h1>

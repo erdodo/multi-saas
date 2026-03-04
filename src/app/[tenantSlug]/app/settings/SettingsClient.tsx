@@ -2,49 +2,69 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { updateTenantInfo, updateBranding, updateUserInfo, updatePassword } from "./actions";
+import {
+  updateTenantInfo,
+  updateBranding,
+  updateUserInfo,
+  updatePassword,
+} from "./actions";
 import { Building2, User, Lock, Palette, Sun, Moon, Check } from "lucide-react";
 import Image from "next/image";
 
 interface TenantData {
-  name:           string;
-  slug:           string | null;
-  siteTitle:      string | null;
-  logoUrl:        string | null;
-  faviconUrl:     string | null;
-  primaryColor:   string;
+  name: string;
+  slug: string | null;
+  siteTitle: string | null;
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  primaryColor: string;
   secondaryColor: string;
-  accentColor:    string;
-  textOnPrimary:  string;
-  fontFamily:     string;
-  borderRadius:   string;
-  darkMode:       boolean;
+  accentColor: string;
+  textOnPrimary: string;
+  fontFamily: string;
+  borderRadius: string;
+  darkMode: boolean;
 }
 
 interface Props {
   tenant: TenantData;
-  user:   { name: string; email: string };
+  user: { name: string; email: string };
 }
 
-function FormInput({ label, hint, ...props }: { label: string; hint?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+function FormInput({
+  label,
+  hint,
+  ...props
+}: {
+  label: string;
+  hint?: string;
+} & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div>
       <label className="block text-sm text-slate-700 mb-1">{label}</label>
       <input
         {...props}
-        className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+        className="w-full border border-slate-200 rounded-[var(--brand-radius,8px)] px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)] bg-white"
       />
       {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
     </div>
   );
 }
 
-function SaveBtn({ label = "Kaydet", onClick, saving }: { label?: string; onClick: () => void; saving: boolean }) {
+function SaveBtn({
+  label = "Kaydet",
+  onClick,
+  saving,
+}: {
+  label?: string;
+  onClick: () => void;
+  saving: boolean;
+}) {
   return (
     <button
       onClick={onClick}
       disabled={saving}
-      className="w-full rounded-lg py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-60"
+      className="w-full rounded-[var(--brand-radius,8px)] py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-60"
       style={{ backgroundColor: "var(--brand-primary, #3b82f6)" }}
     >
       {saving ? "Kaydediliyor..." : label}
@@ -52,7 +72,15 @@ function SaveBtn({ label = "Kaydet", onClick, saving }: { label?: string; onClic
   );
 }
 
-function ColorInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function ColorInput({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
   return (
     <div>
       <label className="block text-xs text-slate-600 mb-1.5">{label}</label>
@@ -62,7 +90,7 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
             type="color"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer p-0.5"
+            className="w-10 h-10 rounded-[var(--brand-radius,8px)] border border-slate-200 cursor-pointer p-0.5"
           />
         </div>
         <input
@@ -73,7 +101,7 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
             if (/^#[0-9a-fA-F]{0,6}$/.test(v)) onChange(v);
           }}
           maxLength={7}
-          className="w-28 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-28 border border-slate-200 rounded-[var(--brand-radius,8px)] px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)]"
         />
       </div>
     </div>
@@ -81,35 +109,38 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
 }
 
 const TABS = [
-  { key: "business",  label: "İşletme",   icon: Building2 },
-  { key: "branding",  label: "Marka",     icon: Palette   },
-  { key: "user",      label: "Kullanıcı", icon: User       },
-  { key: "password",  label: "Şifre",     icon: Lock       },
+  { key: "business", label: "İşletme", icon: Building2 },
+  { key: "branding", label: "Marka", icon: Palette },
+  { key: "user", label: "Kullanıcı", icon: User },
+  { key: "password", label: "Şifre", icon: Lock },
 ] as const;
 
-type Tab = typeof TABS[number]["key"];
+type Tab = (typeof TABS)[number]["key"];
 
 const FONTS = [
-  { key: "inter",   label: "Inter",          sample: "font-sans" },
-  { key: "poppins", label: "Poppins",         sample: "font-sans" },
-  { key: "roboto",  label: "Roboto",          sample: "font-sans" },
-  { key: "system",  label: "System Default",  sample: "font-sans" },
+  { key: "inter", label: "Inter", sample: "font-sans" },
+  { key: "poppins", label: "Poppins", sample: "font-sans" },
+  { key: "roboto", label: "Roboto", sample: "font-sans" },
+  { key: "system", label: "System Default", sample: "font-sans" },
 ];
 
 const RADII = [
-  { key: "none",  label: "Köşeli",    style: "rounded-none"  },
-  { key: "sm",    label: "Az Yuvarlak",style: "rounded-sm"   },
-  { key: "md",    label: "Orta",      style: "rounded-md"    },
-  { key: "lg",    label: "Yuvarlak",  style: "rounded-lg"    },
-  { key: "full",  label: "Tam",       style: "rounded-full"  },
+  { key: "none", label: "Köşeli", style: "rounded-none" },
+  { key: "sm", label: "Az Yuvarlak", style: "rounded-sm" },
+  { key: "md", label: "Orta", style: "rounded-md" },
+  { key: "lg", label: "Yuvarlak", style: "rounded-lg" },
+  { key: "full", label: "Tam", style: "rounded-full" },
 ];
 
 export default function SettingsClient({ tenant, user }: Props) {
-  const [tab, setTab]   = useState<Tab>("business");
+  const [tab, setTab] = useState<Tab>("business");
   const [saving, setSaving] = useState(false);
 
   /* ── İşletme formu ── */
-  const [biz, setBiz] = useState({ name: tenant.name, slug: tenant.slug ?? "" });
+  const [biz, setBiz] = useState({
+    name: tenant.name,
+    slug: tenant.slug ?? "",
+  });
   const saveBiz = async () => {
     setSaving(true);
     const r = await updateTenantInfo(biz);
@@ -120,20 +151,22 @@ export default function SettingsClient({ tenant, user }: Props) {
 
   /* ── Branding formu ── */
   const [brand, setBrand] = useState({
-    siteTitle:      tenant.siteTitle      ?? "",
-    logoUrl:        tenant.logoUrl        ?? "",
-    faviconUrl:     tenant.faviconUrl     ?? "",
-    primaryColor:   tenant.primaryColor,
+    siteTitle: tenant.siteTitle ?? "",
+    logoUrl: tenant.logoUrl ?? "",
+    faviconUrl: tenant.faviconUrl ?? "",
+    primaryColor: tenant.primaryColor,
     secondaryColor: tenant.secondaryColor,
-    accentColor:    tenant.accentColor,
-    textOnPrimary:  tenant.textOnPrimary,
-    fontFamily:     tenant.fontFamily,
-    borderRadius:   tenant.borderRadius,
-    darkMode:       tenant.darkMode,
+    accentColor: tenant.accentColor,
+    textOnPrimary: tenant.textOnPrimary,
+    fontFamily: tenant.fontFamily,
+    borderRadius: tenant.borderRadius,
+    darkMode: tenant.darkMode,
   });
   const saveBrand = async () => {
     setSaving(true);
-    const r = await updateBranding(brand as Parameters<typeof updateBranding>[0]);
+    const r = await updateBranding(
+      brand as Parameters<typeof updateBranding>[0],
+    );
     setSaving(false);
     if (r.success) {
       toast.success("Marka ayarları kaydedildi");
@@ -155,19 +188,26 @@ export default function SettingsClient({ tenant, user }: Props) {
   /* ── Şifre formu ── */
   const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });
   const savePwd = async () => {
-    if (pwd.next !== pwd.confirm) { toast.error("Yeni şifreler eşleşmiyor"); return; }
+    if (pwd.next !== pwd.confirm) {
+      toast.error("Yeni şifreler eşleşmiyor");
+      return;
+    }
     setSaving(true);
     const r = await updatePassword({ current: pwd.current, next: pwd.next });
     setSaving(false);
-    if (r.success) { toast.success("Şifre güncellendi"); setPwd({ current: "", next: "", confirm: "" }); }
-    else toast.error(r.error);
+    if (r.success) {
+      toast.success("Şifre güncellendi");
+      setPwd({ current: "", next: "", confirm: "" });
+    } else toast.error(r.error);
   };
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Ayarlar</h1>
-        <p className="text-slate-500 text-sm">İşletme, marka ve hesap bilgilerinizi yönetin</p>
+        <p className="text-slate-500 text-sm">
+          İşletme, marka ve hesap bilgilerinizi yönetin
+        </p>
       </div>
 
       {/* Sekme Çubuğu */}
@@ -176,8 +216,10 @@ export default function SettingsClient({ tenant, user }: Props) {
           <button
             key={key}
             onClick={() => setTab(key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              tab === key ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
+            className={`flex items-center gap-2 px-4 py-2 rounded-[var(--brand-radius,8px)] text-sm font-medium transition-colors ${
+              tab === key
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -189,25 +231,38 @@ export default function SettingsClient({ tenant, user }: Props) {
       {/* ── İşletme ── */}
       {tab === "business" && (
         <div className="bg-white rounded-xl border border-slate-200 p-6 max-w-lg space-y-4">
-          <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">İşletme Bilgileri</h2>
+          <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
+            İşletme Bilgileri
+          </h2>
           <FormInput
             label="İşletme Adı"
             value={biz.name}
             onChange={(e) => setBiz((b) => ({ ...b, name: e.target.value }))}
           />
           <div>
-            <label className="block text-sm text-slate-700 mb-1">URL Adresi (slug)</label>
+            <label className="block text-sm text-slate-700 mb-1">
+              URL Adresi (slug)
+            </label>
             <div className="flex items-center gap-0">
-              <span className="text-sm text-slate-400 border border-r-0 border-slate-200 bg-slate-50 rounded-l-lg px-3 py-2.5 whitespace-nowrap">
+              <span className="text-sm text-slate-400 border border-r-0 border-slate-200 bg-slate-50 rounded-l-[var(--brand-radius,8px)] px-3 py-2.5 whitespace-nowrap">
                 sitem.com/
               </span>
               <input
                 value={biz.slug}
-                onChange={(e) => setBiz((b) => ({ ...b, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") }))}
-                className="flex-1 border border-slate-200 rounded-r-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                  setBiz((b) => ({
+                    ...b,
+                    slug: e.target.value
+                      .toLowerCase()
+                      .replace(/[^a-z0-9-]/g, ""),
+                  }))
+                }
+                className="flex-1 border border-slate-200 rounded-r-[var(--brand-radius,8px)] px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)]"
               />
             </div>
-            <p className="text-xs text-slate-400 mt-1">Sadece küçük harf, rakam ve tire (-) kullanabilirsiniz</p>
+            <p className="text-xs text-slate-400 mt-1">
+              Sadece küçük harf, rakam ve tire (-) kullanabilirsiniz
+            </p>
           </div>
           <SaveBtn onClick={saveBiz} saving={saving} />
         </div>
@@ -220,19 +275,25 @@ export default function SettingsClient({ tenant, user }: Props) {
           <div className="lg:col-span-3 space-y-6">
             {/* Site Kimliği */}
             <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
-              <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">Site Kimliği</h2>
+              <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
+                Site Kimliği
+              </h2>
               <FormInput
                 label="Site Başlığı"
                 placeholder="Örn: Güzellik Salonu | Randevu"
                 value={brand.siteTitle}
-                onChange={(e) => setBrand((b) => ({ ...b, siteTitle: e.target.value }))}
+                onChange={(e) =>
+                  setBrand((b) => ({ ...b, siteTitle: e.target.value }))
+                }
                 hint="Tarayıcı sekmesinde ve arama sonuçlarında görünür"
               />
               <FormInput
                 label="Logo URL"
                 placeholder="https://cdn.orneksite.com/logo.png"
                 value={brand.logoUrl}
-                onChange={(e) => setBrand((b) => ({ ...b, logoUrl: e.target.value }))}
+                onChange={(e) =>
+                  setBrand((b) => ({ ...b, logoUrl: e.target.value }))
+                }
                 hint="PNG / SVG önerilir. Boş bırakırsanız ilk harf gösterilir."
               />
               {brand.logoUrl && (
@@ -252,14 +313,18 @@ export default function SettingsClient({ tenant, user }: Props) {
                 label="Favicon URL"
                 placeholder="https://cdn.orneksite.com/favicon.ico"
                 value={brand.faviconUrl}
-                onChange={(e) => setBrand((b) => ({ ...b, faviconUrl: e.target.value }))}
+                onChange={(e) =>
+                  setBrand((b) => ({ ...b, faviconUrl: e.target.value }))
+                }
                 hint="ICO veya PNG formatı, 32×32 px önerilir"
               />
             </div>
 
             {/* Renkler */}
             <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
-              <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">Renk Paleti</h2>
+              <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
+                Renk Paleti
+              </h2>
               <div className="grid grid-cols-2 gap-4">
                 <ColorInput
                   label="Ana Renk"
@@ -269,12 +334,16 @@ export default function SettingsClient({ tenant, user }: Props) {
                 <ColorInput
                   label="Ana Renk Üstü Metin"
                   value={brand.textOnPrimary}
-                  onChange={(v) => setBrand((b) => ({ ...b, textOnPrimary: v }))}
+                  onChange={(v) =>
+                    setBrand((b) => ({ ...b, textOnPrimary: v }))
+                  }
                 />
                 <ColorInput
                   label="İkincil Renk"
                   value={brand.secondaryColor}
-                  onChange={(v) => setBrand((b) => ({ ...b, secondaryColor: v }))}
+                  onChange={(v) =>
+                    setBrand((b) => ({ ...b, secondaryColor: v }))
+                  }
                 />
                 <ColorInput
                   label="Vurgu Rengi"
@@ -286,20 +355,26 @@ export default function SettingsClient({ tenant, user }: Props) {
 
             {/* Yazı Tipi */}
             <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-3">
-              <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">Yazı Tipi</h2>
+              <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
+                Yazı Tipi
+              </h2>
               <div className="grid grid-cols-2 gap-2">
                 {FONTS.map((f) => (
                   <button
                     key={f.key}
-                    onClick={() => setBrand((b) => ({ ...b, fontFamily: f.key }))}
-                    className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-colors ${
+                    onClick={() =>
+                      setBrand((b) => ({ ...b, fontFamily: f.key }))
+                    }
+                    className={`flex items-center justify-between px-4 py-3 rounded-[var(--brand-radius,12px)] border-2 transition-colors ${
                       brand.fontFamily === f.key
-                        ? "border-blue-500 bg-blue-50"
+                        ? "border-[var(--brand-primary,#3b82f6)] bg-[var(--brand-primary,#3b82f6)] bg-opacity-10"
                         : "border-slate-200 hover:border-slate-300"
                     }`}
                   >
                     <span className="text-sm text-slate-700">{f.label}</span>
-                    {brand.fontFamily === f.key && <Check className="w-4 h-4 text-blue-500" />}
+                    {brand.fontFamily === f.key && (
+                      <Check className="w-4 h-4 text-[var(--brand-primary,#3b82f6)]" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -307,15 +382,19 @@ export default function SettingsClient({ tenant, user }: Props) {
 
             {/* Kenar Yarıçapı */}
             <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-3">
-              <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">Kenar Yuvarlama</h2>
+              <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
+                Kenar Yuvarlama
+              </h2>
               <div className="grid grid-cols-5 gap-2">
                 {RADII.map((r) => (
                   <button
                     key={r.key}
-                    onClick={() => setBrand((b) => ({ ...b, borderRadius: r.key }))}
+                    onClick={() =>
+                      setBrand((b) => ({ ...b, borderRadius: r.key }))
+                    }
                     className={`flex flex-col items-center gap-2 p-3 border-2 transition-colors ${
                       brand.borderRadius === r.key
-                        ? "border-blue-500 bg-blue-50"
+                        ? "border-[var(--brand-primary,#3b82f6)] bg-[var(--brand-primary,#3b82f6)] bg-opacity-10"
                         : "border-slate-200 hover:border-slate-300"
                     } ${r.style}`}
                   >
@@ -323,7 +402,9 @@ export default function SettingsClient({ tenant, user }: Props) {
                       className={`w-8 h-8 bg-slate-300 ${r.style}`}
                       style={{ backgroundColor: brand.primaryColor }}
                     />
-                    <span className="text-xs text-slate-600 text-center leading-tight">{r.label}</span>
+                    <span className="text-xs text-slate-600 text-center leading-tight">
+                      {r.label}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -334,33 +415,48 @@ export default function SettingsClient({ tenant, user }: Props) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-slate-900">Karanlık Mod</p>
-                  <p className="text-sm text-slate-500 mt-0.5">Uygulama arka planını koyu yapın</p>
+                  <p className="text-sm text-slate-500 mt-0.5">
+                    Uygulama arka planını koyu yapın
+                  </p>
                 </div>
                 <button
-                  onClick={() => setBrand((b) => ({ ...b, darkMode: !b.darkMode }))}
+                  onClick={() =>
+                    setBrand((b) => ({ ...b, darkMode: !b.darkMode }))
+                  }
                   className={`relative w-12 h-6 rounded-full transition-colors flex items-center ${
-                    brand.darkMode ? "bg-slate-800 justify-end" : "bg-slate-200 justify-start"
+                    brand.darkMode
+                      ? "bg-slate-800 justify-end"
+                      : "bg-slate-200 justify-start"
                   }`}
                 >
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center shadow mx-0.5 transition-colors ${
-                    brand.darkMode ? "bg-white" : "bg-white"
-                  }`}>
-                    {brand.darkMode
-                      ? <Moon className="w-3 h-3 text-slate-700" />
-                      : <Sun className="w-3 h-3 text-amber-500" />
-                    }
+                  <span
+                    className={`w-5 h-5 rounded-full flex items-center justify-center shadow mx-0.5 transition-colors ${
+                      brand.darkMode ? "bg-white" : "bg-white"
+                    }`}
+                  >
+                    {brand.darkMode ? (
+                      <Moon className="w-3 h-3 text-slate-700" />
+                    ) : (
+                      <Sun className="w-3 h-3 text-amber-500" />
+                    )}
                   </span>
                 </button>
               </div>
             </div>
 
-            <SaveBtn label="Marka Ayarlarını Kaydet" onClick={saveBrand} saving={saving} />
+            <SaveBtn
+              label="Marka Ayarlarını Kaydet"
+              onClick={saveBrand}
+              saving={saving}
+            />
           </div>
 
           {/* Sağ — Önizleme */}
           <div className="lg:col-span-2">
             <div className="sticky top-6">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Canlı Önizleme</p>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                Canlı Önizleme
+              </p>
               <div
                 className={`rounded-2xl border overflow-hidden shadow-sm ${brand.darkMode ? "bg-slate-900 border-slate-700" : "bg-slate-50 border-slate-200"}`}
               >
@@ -369,27 +465,38 @@ export default function SettingsClient({ tenant, user }: Props) {
                   className="px-4 py-3 flex items-center gap-3"
                   style={{ backgroundColor: brand.primaryColor }}
                 >
-                  <div className="w-7 h-7 rounded-md bg-white/20 flex items-center justify-center text-xs font-bold"
-                    style={{ color: brand.textOnPrimary }}>
+                  <div
+                    className="w-7 h-7 rounded-md bg-white/20 flex items-center justify-center text-xs font-bold"
+                    style={{ color: brand.textOnPrimary }}
+                  >
                     {(brand.siteTitle || "S").charAt(0).toUpperCase()}
                   </div>
-                  <span className="text-sm font-semibold" style={{ color: brand.textOnPrimary }}>
+                  <span
+                    className="text-sm font-semibold"
+                    style={{ color: brand.textOnPrimary }}
+                  >
                     {brand.siteTitle || "Site Başlığı"}
                   </span>
                 </div>
 
                 {/* Mock Nav */}
-                <div className={`px-4 py-3 space-y-1 ${brand.darkMode ? "bg-slate-800" : "bg-white"} border-b ${brand.darkMode ? "border-slate-700" : "border-slate-100"}`}>
+                <div
+                  className={`px-4 py-3 space-y-1 ${brand.darkMode ? "bg-slate-800" : "bg-white"} border-b ${brand.darkMode ? "border-slate-700" : "border-slate-100"}`}
+                >
                   {["Anasayfa", "Müşteriler", "Takvim"].map((item, i) => (
                     <div
                       key={item}
                       className="px-3 py-2 text-xs rounded-lg flex items-center gap-2"
-                      style={i === 0 ? {
-                        backgroundColor: brand.primaryColor,
-                        color: brand.textOnPrimary,
-                      } : {
-                        color: brand.darkMode ? "#94a3b8" : "#64748b",
-                      }}
+                      style={
+                        i === 0
+                          ? {
+                              backgroundColor: brand.primaryColor,
+                              color: brand.textOnPrimary,
+                            }
+                          : {
+                              color: brand.darkMode ? "#94a3b8" : "#64748b",
+                            }
+                      }
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
                       {item}
@@ -428,12 +535,18 @@ export default function SettingsClient({ tenant, user }: Props) {
               {/* Renk Swatches */}
               <div className="mt-4 flex gap-2">
                 {[
-                  { c: brand.primaryColor,   l: "Ana" },
+                  { c: brand.primaryColor, l: "Ana" },
                   { c: brand.secondaryColor, l: "İkincil" },
-                  { c: brand.accentColor,    l: "Vurgu" },
+                  { c: brand.accentColor, l: "Vurgu" },
                 ].map(({ c, l }) => (
-                  <div key={l} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="w-full h-6 rounded-md" style={{ backgroundColor: c }} />
+                  <div
+                    key={l}
+                    className="flex-1 flex flex-col items-center gap-1"
+                  >
+                    <div
+                      className="w-full h-6 rounded-md"
+                      style={{ backgroundColor: c }}
+                    />
                     <span className="text-xs text-slate-500">{l}</span>
                   </div>
                 ))}
@@ -446,7 +559,9 @@ export default function SettingsClient({ tenant, user }: Props) {
       {/* ── Kullanıcı ── */}
       {tab === "user" && (
         <div className="bg-white rounded-xl border border-slate-200 p-6 max-w-lg space-y-4">
-          <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">Hesap Bilgileri</h2>
+          <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
+            Hesap Bilgileri
+          </h2>
           <FormInput
             label="Ad Soyad"
             value={usr.name}
@@ -465,7 +580,9 @@ export default function SettingsClient({ tenant, user }: Props) {
       {/* ── Şifre ── */}
       {tab === "password" && (
         <div className="bg-white rounded-xl border border-slate-200 p-6 max-w-lg space-y-4">
-          <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">Şifre Değiştir</h2>
+          <h2 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">
+            Şifre Değiştir
+          </h2>
           <FormInput
             label="Mevcut Şifre"
             type="password"

@@ -17,7 +17,10 @@ import {
 
 const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
   PENDING: { label: "Beklemede", cls: "bg-yellow-100 text-yellow-800" },
-  CONFIRMED: { label: "Onaylı", cls: "bg-blue-100 text-blue-800" },
+  CONFIRMED: {
+    label: "Onaylı",
+    cls: "bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 text-[var(--brand-primary,#1d4ed8)]",
+  },
   COMPLETED: { label: "Tamamlandı", cls: "bg-green-100 text-green-800" },
   CANCELLED: { label: "İptal", cls: "bg-gray-100 text-gray-600" },
   NO_SHOW: { label: "Gelmedi", cls: "bg-red-100 text-red-800" },
@@ -63,15 +66,15 @@ export default async function RandevuPage({ params }: Props) {
       label: "Bugünkü Randevu",
       value: todayApps.length,
       icon: Calendar,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "text-[var(--brand-primary,#2563eb)]",
+      bg: "bg-[var(--brand-primary,#3b82f6)] bg-opacity-10",
     },
     {
       label: "Bu Hafta",
       value: weekApps.length,
       icon: TrendingUp,
-      color: "text-indigo-600",
-      bg: "bg-indigo-50",
+      color: "text-[var(--brand-primary,#4f46e5)]",
+      bg: "bg-[var(--brand-primary,#4f46e5)] bg-opacity-10",
     },
     {
       label: "Aktif Personel",
@@ -94,8 +97,8 @@ export default async function RandevuPage({ params }: Props) {
       {/* Başlık */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-            <Scissors className="w-5 h-5 text-indigo-600" />
+          <div className="w-10 h-10 rounded-[var(--brand-radius,12px)] bg-[var(--brand-primary,#4f46e5)] bg-opacity-10 flex items-center justify-center">
+            <Scissors className="w-5 h-5 text-[var(--brand-primary,#4f46e5)]" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
@@ -109,7 +112,7 @@ export default async function RandevuPage({ params }: Props) {
             <Link
               href={bookingUrl}
               target="_blank"
-              className="flex items-center gap-2 text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+              className="flex items-center gap-2 text-sm bg-[var(--brand-primary,#4f46e5)] text-[var(--brand-text-on-primary,#fff)] px-4 py-2 rounded-[var(--brand-radius,8px)] hover:opacity-90 transition-opacity"
             >
               <ExternalLink className="w-4 h-4" />
               Rezervasyon Sayfası
@@ -117,7 +120,7 @@ export default async function RandevuPage({ params }: Props) {
           )}
           <Link
             href={panelUrl}
-            className="flex items-center gap-2 text-sm bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors"
+            className="flex items-center gap-2 text-sm bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-[var(--brand-radius,8px)] hover:bg-slate-50 transition-colors"
           >
             <Calendar className="w-4 h-4" />
             Randevu Paneli →
@@ -130,10 +133,10 @@ export default async function RandevuPage({ params }: Props) {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="bg-white rounded-xl border border-slate-200 p-4"
+            className="bg-white rounded-[var(--brand-radius,12px)] border border-slate-200 p-4"
           >
             <div
-              className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center mb-3`}
+              className={`w-9 h-9 rounded-[var(--brand-radius,8px)] ${s.bg} flex items-center justify-center mb-3`}
             >
               <s.icon className={`w-5 h-5 ${s.color}`} />
             </div>
@@ -150,8 +153,8 @@ export default async function RandevuPage({ params }: Props) {
             href: `${panelUrl}/appointments`,
             label: "Randevular",
             icon: Calendar,
-            color: "text-blue-600",
-            bg: "hover:border-blue-200",
+            color: "text-[var(--brand-primary,#2563eb)]",
+            bg: "hover:border-[var(--brand-primary,#bfdbfe)]",
           },
           {
             href: `${panelUrl}/staff`,
@@ -171,8 +174,8 @@ export default async function RandevuPage({ params }: Props) {
             href: `${panelUrl}/reports`,
             label: "Raporlar",
             icon: TrendingUp,
-            color: "text-indigo-600",
-            bg: "hover:border-indigo-200",
+            color: "text-[var(--brand-primary,#4f46e5)]",
+            bg: "hover:border-[var(--brand-primary,#c7d2fe)]",
           },
           {
             href: `/${tenantSlug}/app/settings`,
@@ -185,7 +188,7 @@ export default async function RandevuPage({ params }: Props) {
           <Link
             key={item.href}
             href={item.href}
-            className={`bg-white rounded-xl border border-slate-200 p-4 transition-colors ${item.bg} flex items-center gap-3 group`}
+            className={`bg-white rounded-[var(--brand-radius,12px)] border border-slate-200 p-4 transition-colors ${item.bg} flex items-center gap-3 group`}
           >
             <item.icon className={`w-5 h-5 ${item.color}`} />
             <span className="text-sm font-medium text-slate-700">
@@ -196,12 +199,12 @@ export default async function RandevuPage({ params }: Props) {
       </div>
 
       {/* Son Randevular */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-[var(--brand-radius,12px)] border border-slate-200 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <h2 className="font-semibold text-slate-900">Son Randevular</h2>
           <Link
             href={`${panelUrl}/appointments`}
-            className="text-xs text-blue-600 hover:underline"
+            className="text-xs text-[var(--brand-primary,#2563eb)] hover:opacity-80"
           >
             Tümünü gör →
           </Link>

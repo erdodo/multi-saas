@@ -4,22 +4,13 @@ import { redirect, notFound } from "next/navigation";
 import { ProfileMenu } from "@/components/profile-menu";
 import { NavLinks } from "@/components/app/NavLinks";
 import { prisma } from "@/lib/prisma";
+import {
+  getTenantBranding,
+  brandCssVars,
+  darken,
+  hexToRgba,
+} from "@/lib/branding";
 import type { Metadata } from "next";
-
-const FONT_STACK: Record<string, string> = {
-  inter: "'Inter', sans-serif",
-  poppins: "'Poppins', sans-serif",
-  roboto: "'Roboto', sans-serif",
-  system: "system-ui, sans-serif",
-};
-
-const RADIUS_MAP: Record<string, string> = {
-  none: "0px",
-  sm: "4px",
-  md: "8px",
-  lg: "16px",
-  full: "9999px",
-};
 
 interface Props {
   children: React.ReactNode;
@@ -28,14 +19,10 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { tenantSlug } = await params;
-  const t = await prisma.tenant.findUnique({
-    where: { slug: tenantSlug },
-    select: { name: true, siteTitle: true, faviconUrl: true },
-  });
-  if (!t) return {};
+  const b = await getTenantBranding(tenantSlug);
   return {
-    title: t.siteTitle ?? t.name,
-    icons: t.faviconUrl ? { icon: t.faviconUrl } : undefined,
+    title: b.siteTitle ?? b.name,
+    icons: b.faviconUrl ? { icon: b.faviconUrl } : undefined,
   };
 }
 
@@ -45,120 +32,128 @@ export default async function TenantAppLayout({ children, params }: Props) {
 
   const { tenantSlug } = await params;
 
-  // Slug üzerinden tenant ve branding verisini çek
+  const [b, tenantModulesData] = await Promise.all([
+    getTenantBranding(tenantSlug),
+    prisma.tenantModule.findMany({
+      where: { tenant: { slug: tenantSlug }, isActive: true },
+      include: { module: { select: { key: true, name: true } } },
+    }),
+  ]);
+
+  // Verify tenant exists
   const tenant = await prisma.tenant.findUnique({
     where: { slug: tenantSlug },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      siteTitle: true,
-      logoUrl: true,
-      primaryColor: true,
-      secondaryColor: true,
-      accentColor: true,
-      textOnPrimary: true,
-      fontFamily: true,
-      borderRadius: true,
-      darkMode: true,
-      tenantModules: {
-        where: { isActive: true },
-        include: { module: { select: { key: true, name: true } } },
-      },
-    },
+    select: { id: true },
   });
-
   if (!tenant) return notFound();
-
-  // Middleware slug doğruluğunu zaten garanti ediyor.
-  // ID mismatch yeniden yönlendirme sonsuz döngüye neden olduğundan kaldırıldı.
 
   if (!session.user.setupCompleted) redirect("/setup");
 
-  const primaryColor = tenant.primaryColor ?? "#3b82f6";
-  const secondaryColor = tenant.secondaryColor ?? "#6366f1";
-  const accentColor = tenant.accentColor ?? "#10b981";
-  const textOnPrimary = tenant.textOnPrimary ?? "#ffffff";
-  const fontFamily = FONT_STACK[tenant.fontFamily ?? "inter"];
-  const borderRadius = RADIUS_MAP[tenant.borderRadius ?? "md"];
+  const modules = tenantModulesData.map((tm) => ({
+    key: tm.module.key,
+    name: tm.module.name,
+  }));
 
-  const cssVars: React.CSSProperties = {
-    "--brand-primary": primaryColor,
-    "--brand-secondary": secondaryColor,
-    "--brand-accent": accentColor,
-    "--brand-text-on-primary": textOnPrimary,
-    "--brand-font": fontFamily,
-    "--brand-radius": borderRadius,
-  } as React.CSSProperties;
+  // Sidebar: dark version of primary color
+  const sidebarBg = darken(b.primaryColor, 0.18);
+  const sidebarBg2 = darken(b.primaryColor, 0.28);
+  const sidebarGrad = `linear-gradient(180deg, ${sidebarBg} 0%, ${sidebarBg2} 100%)`;
 
   return (
     <div
-      className={`min-h-screen flex ${tenant.darkMode ? "dark bg-slate-900" : "bg-slate-50"}`}
-      style={{ ...cssVars, fontFamily }}
+      className={`min-h-screen flex ${b.darkMode ? "dark" : ""}`}
+      style={brandCssVars(b)}
     >
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col dark:bg-slate-800 dark:border-slate-700">
-        <div className="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-700">
-          {tenant.logoUrl ? (
+      <aside
+        className="w-64 hidden md:flex flex-col"
+        style={{ background: sidebarGrad }}
+      >
+        {/* Logo */}
+        <div
+          className="h-16 flex items-center px-5 flex-shrink-0"
+          style={{ borderBottom: `1px solid ${hexToRgba("#ffffff", 0.1)}` }}
+        >
+          {b.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={tenant.logoUrl}
-              alt={tenant.name}
-              className="h-8 max-w-35 object-contain"
+              src={b.logoUrl}
+              alt={b.name}
+              className="h-8 max-w-[140px] object-contain"
             />
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-                style={{ backgroundColor: primaryColor, color: textOnPrimary }}
+                className="w-9 h-9 flex items-center justify-center text-white font-bold text-sm shadow-lg flex-shrink-0"
+                style={{
+                  backgroundColor: hexToRgba("#ffffff", 0.2),
+                  borderRadius: b.radiusPx,
+                  color: b.textOnPrimary,
+                }}
               >
-                {tenant.name[0]?.toUpperCase()}
+                {b.name[0]?.toUpperCase()}
               </div>
-              <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white truncate">
-                {tenant.siteTitle ?? tenant.name}
-              </span>
+              <div>
+                <span className="font-bold text-sm text-white truncate block leading-tight">
+                  {b.siteTitle ?? b.name}
+                </span>
+                <span
+                  className="text-xs"
+                  style={{ color: hexToRgba("#ffffff", 0.5) }}
+                >
+                  Dashboard
+                </span>
+              </div>
             </div>
           )}
         </div>
 
+        {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          <NavLinks
-            tenantSlug={tenantSlug}
-            modules={tenant.tenantModules.map((tm) => ({
-              key: tm.module.key,
-              name: tm.module.name,
-            }))}
-          />
+          <NavLinks tenantSlug={tenantSlug} modules={modules} />
         </nav>
 
-        <div className="p-4 border-t border-slate-200 dark:border-slate-700 space-y-1">
+        {/* Profile */}
+        <div
+          className="p-3 flex-shrink-0"
+          style={{ borderTop: `1px solid ${hexToRgba("#ffffff", 0.1)}` }}
+        >
           <ProfileMenu
             name={session.user.name ?? "Kullanıcı"}
             email={session.user.email ?? ""}
             role={session.user.role ?? ""}
             tenantSlug={tenantSlug}
-            primaryColor={primaryColor}
-            modules={tenant.tenantModules.map((tm) => ({
-              key: tm.module.key,
-              name: tm.module.name,
-            }))}
+            primaryColor={b.primaryColor}
+            modules={modules}
           />
         </div>
       </aside>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 dark:bg-slate-800 dark:border-slate-700">
-          <div className="flex items-center gap-4">
-            <button className="md:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg">
+      <div
+        className={`flex-1 flex flex-col min-w-0 ${b.darkMode ? "bg-slate-900" : "bg-slate-50"}`}
+      >
+        <header
+          className={`h-16 flex items-center justify-between px-4 sm:px-6 shadow-sm flex-shrink-0 ${b.darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-100"} border-b`}
+        >
+          <div className="flex items-center gap-3">
+            <button
+              className="md:hidden p-2 -ml-2 rounded-lg transition-colors"
+              style={{ color: b.darkMode ? "#94a3b8" : "#64748b" }}
+            >
               <PanelLeftClose className="w-5 h-5" />
             </button>
+            <span
+              className={`text-sm font-medium ${b.darkMode ? "text-slate-400" : "text-slate-500"} hidden sm:block`}
+            >
+              {b.siteTitle ?? b.name}
+            </span>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="relative p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
-              <Bell className="w-5 h-5" />
-            </button>
-          </div>
+          <button
+            className={`p-2 rounded-lg transition-colors ${b.darkMode ? "text-slate-400 hover:bg-slate-700" : "text-slate-500 hover:bg-slate-100"}`}
+          >
+            <Bell className="w-5 h-5" />
+          </button>
         </header>
         <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           {children}

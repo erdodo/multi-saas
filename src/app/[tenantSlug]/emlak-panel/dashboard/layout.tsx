@@ -1,11 +1,17 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { Bell, Home } from "lucide-react";
+import { Bell, Home, ArrowLeft } from "lucide-react";
 import { EmlakSidebarNav } from "@/modules/emlak/components/layout/SidebarNav";
 import { ProfileMenu } from "@/components/profile-menu";
-import { getTenantBranding, contrastText } from "@/modules/emlak/lib/branding";
+import {
+  getTenantBranding,
+  brandCssVars,
+  darken,
+  hexToRgba,
+} from "@/lib/branding";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 interface Props {
   children: React.ReactNode;
@@ -16,15 +22,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { tenantSlug } = await params;
   const b = await getTenantBranding(tenantSlug);
   return {
-    title: b.siteTitle ?? (b.name ? `${b.name} | Emlak Paneli` : "Emlak Paneli"),
+    title:
+      b.siteTitle ?? (b.name ? `${b.name} | Emlak Paneli` : "Emlak Paneli"),
     icons: {
-      icon:  b.faviconUrl ?? b.logoUrl ?? undefined,
+      icon: b.faviconUrl ?? b.logoUrl ?? undefined,
       apple: b.logoUrl ?? undefined,
     },
   };
 }
 
-export default async function EmlakDashboardLayout({ children, params }: Props) {
+export default async function EmlakDashboardLayout({
+  children,
+  params,
+}: Props) {
   const session = await auth();
   if (!session?.user) redirect("/login");
   if (!session.user.setupCompleted) redirect("/setup");
@@ -39,93 +49,123 @@ export default async function EmlakDashboardLayout({ children, params }: Props) 
       include: { module: { select: { key: true, name: true } } },
     }),
   ]);
-  const modules = tenantModules.map((tm) => ({ key: tm.module.key, name: tm.module.name }));
+  const modules = tenantModules.map((tm) => ({
+    key: tm.module.key,
+    name: tm.module.name,
+  }));
 
-  const primaryColor  = b.primaryColor  ?? "#3b82f6";
-  const textOnPrimary = b.textOnPrimary ?? contrastText(primaryColor);
-
-  const RADIUS_MAP: Record<string, string> = {
-    none: "0px", sm: "4px", md: "8px", lg: "12px", full: "9999px",
-  };
-  const FONT_MAP: Record<string, string> = {
-    inter:   "'Inter', system-ui, sans-serif",
-    poppins: "'Poppins', system-ui, sans-serif",
-    roboto:  "'Roboto', system-ui, sans-serif",
-    system:  "system-ui, sans-serif",
-  };
-  const brandRadius = RADIUS_MAP[b.borderRadius ?? "md"] ?? "8px";
-  const brandFont   = FONT_MAP[b.fontFamily   ?? "inter"] ?? "system-ui, sans-serif";
+  // Sidebar derived from branding primary color
+  const sidebarBg = darken(b.primaryColor, 0.18);
+  const sidebarBg2 = darken(b.primaryColor, 0.28);
+  const sidebarGrad = `linear-gradient(180deg, ${sidebarBg} 0%, ${sidebarBg2} 100%)`;
 
   return (
     <div
       className="h-screen overflow-hidden bg-slate-50 flex"
-      style={{
-        "--brand-primary":   primaryColor,
-        "--brand-text":      textOnPrimary,
-        "--brand-secondary": b.secondaryColor ?? "#6366f1",
-        "--brand-accent":    b.accentColor    ?? "#10b981",
-        "--brand-radius":    brandRadius,
-        "--brand-font":      brandFont,
-        fontFamily:          brandFont,
-      } as React.CSSProperties}
+      style={brandCssVars(b)}
     >
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col h-full">
+      <aside
+        className="w-64 hidden md:flex flex-col h-full"
+        style={{ background: sidebarGrad }}
+      >
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-200 flex-shrink-0">
+        <div
+          className="h-16 flex items-center px-5 flex-shrink-0"
+          style={{ borderBottom: `1px solid ${hexToRgba("#ffffff", 0.1)}` }}
+        >
           <div className="flex items-center gap-2.5 min-w-0">
             {b.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={b.logoUrl}
                 alt={b.name}
-                width={32}
-                height={32}
-                className="rounded-lg object-cover flex-shrink-0"
+                width={36}
+                height={36}
+                className="object-cover flex-shrink-0"
+                style={{ borderRadius: b.radiusPx }}
               />
             ) : (
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: primaryColor, color: textOnPrimary }}
+                className="w-9 h-9 flex items-center justify-center flex-shrink-0"
+                style={{
+                  backgroundColor: hexToRgba("#ffffff", 0.2),
+                  borderRadius: b.radiusPx,
+                }}
               >
-                <Home className="w-4 h-4" />
+                <Home className="w-5 h-5 text-white" />
               </div>
             )}
             <div className="min-w-0">
-              <span className="font-bold text-base tracking-tight text-slate-900 truncate block leading-tight">
-                {b.name ?? "Emlak"}
+              <span className="font-bold text-sm text-white truncate block leading-tight">
+                {b.name}
               </span>
-              <p className="text-xs text-slate-400 leading-none">Emlak Paneli</p>
+              <p
+                className="text-xs leading-none"
+                style={{ color: hexToRgba("#ffffff", 0.5) }}
+              >
+                Emlak Paneli
+              </p>
             </div>
           </div>
         </div>
 
         <EmlakSidebarNav
           tenantSlug={tenantSlug}
-          primaryColor={primaryColor}
-          textOnPrimary={textOnPrimary}
+          primaryColor={b.primaryColor}
+          textOnPrimary={b.textOnPrimary}
         />
 
-        <ProfileMenu
-          name={name ?? "Kullanıcı"}
-          email={email ?? ""}
-          role={role ?? ""}
-          tenantSlug={tenantSlug}
-          primaryColor={primaryColor}
-          modules={modules}
-        />
+        {/* Back to apps */}
+        <div className="px-3 pb-2">
+          <Link
+            href={`/${tenantSlug}/app`}
+            className="flex items-center gap-2 px-3 py-2 text-xs font-medium transition-all"
+            style={{
+              color: hexToRgba("#ffffff", 0.45),
+              borderRadius: b.radiusPx,
+            }}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Uygulamalara Dön
+          </Link>
+        </div>
+
+        <div
+          className="p-3 flex-shrink-0"
+          style={{ borderTop: `1px solid ${hexToRgba("#ffffff", 0.1)}` }}
+        >
+          <ProfileMenu
+            name={name ?? "Kullanıcı"}
+            email={email ?? ""}
+            role={role ?? ""}
+            tenantSlug={tenantSlug}
+            primaryColor={b.primaryColor}
+            modules={modules}
+          />
+        </div>
       </aside>
 
-      {/* Sağ taraf */}
+      {/* Right side */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 flex-shrink-0">
-          <span className="text-sm text-slate-500 font-medium">
-            {b.name ?? tenantSlug} · Emlak
-          </span>
+        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-4 sm:px-6 flex-shrink-0 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-7 h-7 flex items-center justify-center flex-shrink-0"
+              style={{ background: b.primaryColor, borderRadius: b.radiusPx }}
+            >
+              <Home className="w-4 h-4" style={{ color: b.textOnPrimary }} />
+            </div>
+            <span className="text-sm font-semibold text-slate-700">
+              {b.name}
+            </span>
+            <span className="text-slate-300">·</span>
+            <span className="text-sm text-slate-400">Emlak</span>
+          </div>
           <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
             <Bell className="w-5 h-5" />
           </button>
         </header>
-
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {children}
         </main>

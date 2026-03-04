@@ -3,8 +3,14 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getDashboardStats } from "@/modules/emlak/actions/dashboard.actions";
 import {
-  Building2, Home, DollarSign, AlertCircle,
-  TrendingUp, Clock, CheckCircle2, FileText,
+  Building2,
+  Home,
+  DollarSign,
+  AlertCircle,
+  TrendingUp,
+  Clock,
+  CheckCircle2,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -69,7 +75,11 @@ export default async function EmlakDashboardPage({ params }: Props) {
           value={stats?.overdueCount ?? 0}
           icon={<AlertCircle className="w-5 h-5" />}
           color="red"
-          sub={stats?.overdueTotal ? `₺${stats.overdueTotal.toLocaleString("tr-TR")}` : undefined}
+          sub={
+            stats?.overdueTotal
+              ? `₺${stats.overdueTotal.toLocaleString("tr-TR")}`
+              : undefined
+          }
           href={`${base}/payments?status=OVERDUE`}
         />
       </div>
@@ -86,13 +96,17 @@ export default async function EmlakDashboardPage({ params }: Props) {
         >
           <div className="divide-y divide-slate-100">
             {stats?.overduePayments?.map((p) => (
-              <div key={p.id} className="flex items-center justify-between py-3 px-4">
+              <div
+                key={p.id}
+                className="flex items-center justify-between py-3 px-4"
+              >
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-slate-900 truncate">
                     {p.lease.property.title}
                   </p>
                   <p className="text-xs text-slate-500">
-                    {p.lease.propertyTenant.firstName} {p.lease.propertyTenant.lastName} ·{" "}
+                    {p.lease.propertyTenant.firstName}{" "}
+                    {p.lease.propertyTenant.lastName} ·{" "}
                     {format(new Date(p.dueDate), "d MMM yyyy", { locale: tr })}
                   </p>
                 </div>
@@ -116,17 +130,23 @@ export default async function EmlakDashboardPage({ params }: Props) {
           <div className="divide-y divide-slate-100">
             {stats?.expiringLeases?.map((l) => {
               const daysLeft = Math.ceil(
-                (new Date(l.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+                (new Date(l.endDate).getTime() - Date.now()) /
+                  (1000 * 60 * 60 * 24),
               );
               return (
-                <div key={l.id} className="flex items-center justify-between py-3 px-4">
+                <div
+                  key={l.id}
+                  className="flex items-center justify-between py-3 px-4"
+                >
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-slate-900 truncate">
                       {l.property.title}
                     </p>
                     <p className="text-xs text-slate-500">
                       {l.propertyTenant.firstName} {l.propertyTenant.lastName} ·{" "}
-                      {format(new Date(l.endDate), "d MMM yyyy", { locale: tr })}
+                      {format(new Date(l.endDate), "d MMM yyyy", {
+                        locale: tr,
+                      })}
                     </p>
                   </div>
                   <span
@@ -134,8 +154,8 @@ export default async function EmlakDashboardPage({ params }: Props) {
                       daysLeft <= 14
                         ? "bg-red-100 text-red-700"
                         : daysLeft <= 30
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-blue-100 text-blue-700"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 text-[var(--brand-primary,#1d4ed8)]"
                     }`}
                   >
                     {daysLeft} gün
@@ -157,13 +177,18 @@ export default async function EmlakDashboardPage({ params }: Props) {
         >
           <div className="divide-y divide-slate-100">
             {stats?.recentPayments?.map((p) => (
-              <div key={p.id} className="flex items-center justify-between py-3 px-4">
+              <div
+                key={p.id}
+                className="flex items-center justify-between py-3 px-4"
+              >
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-slate-900 truncate">
                     {p.lease.property.title}
                   </p>
                   <p className="text-xs text-slate-500">
-                    {p.paidAt ? format(new Date(p.paidAt), "d MMM yyyy", { locale: tr }) : "—"}
+                    {p.paidAt
+                      ? format(new Date(p.paidAt), "d MMM yyyy", { locale: tr })
+                      : "—"}
                   </p>
                 </div>
                 <span className="text-sm font-semibold text-emerald-600 ml-3 flex-shrink-0">
@@ -175,22 +200,34 @@ export default async function EmlakDashboardPage({ params }: Props) {
         </Section>
 
         {/* Hızlı Erişim */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="bg-white rounded-[var(--brand-radius,12px)] border border-slate-200 p-5">
           <h3 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-slate-400" />
             Hızlı İşlemler
           </h3>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Mülk Ekle",       href: `${base}/properties`, icon: Building2   },
-              { label: "Kiracı Ekle",     href: `${base}/tenants`,    icon: Home        },
-              { label: "Sözleşme Ekle",   href: `${base}/leases`,     icon: FileText    },
-              { label: "Ödeme Kaydet",    href: `${base}/payments`,   icon: DollarSign  },
+              {
+                label: "Mülk Ekle",
+                href: `${base}/properties`,
+                icon: Building2,
+              },
+              { label: "Kiracı Ekle", href: `${base}/tenants`, icon: Home },
+              {
+                label: "Sözleşme Ekle",
+                href: `${base}/leases`,
+                icon: FileText,
+              },
+              {
+                label: "Ödeme Kaydet",
+                href: `${base}/payments`,
+                icon: DollarSign,
+              },
             ].map(({ label, href, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
-                className="flex items-center gap-2 p-3 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+                className="flex items-center gap-2 p-3 rounded-[var(--brand-radius,8px)] border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors"
               >
                 <Icon className="w-4 h-4 text-slate-400" />
                 {label}
@@ -206,7 +243,12 @@ export default async function EmlakDashboardPage({ params }: Props) {
 // ─── Alt bileşenler ──────────────────────────────────────────────────────────
 
 function StatCard({
-  label, value, icon, color, sub, href,
+  label,
+  value,
+  icon,
+  color,
+  sub,
+  href,
 }: {
   label: string;
   value: string | number;
@@ -216,17 +258,19 @@ function StatCard({
   href?: string;
 }) {
   const colors = {
-    blue:    "bg-blue-50 text-blue-600",
-    violet:  "bg-violet-50 text-violet-600",
+    blue: "bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 text-[var(--brand-primary,#2563eb)]",
+    violet: "bg-violet-50 text-violet-600",
     emerald: "bg-emerald-50 text-emerald-600",
-    red:     "bg-red-50 text-red-600",
+    red: "bg-red-50 text-red-600",
   };
 
   const card = (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3 hover:border-slate-300 transition-colors">
+    <div className="bg-white rounded-[var(--brand-radius,12px)] border border-slate-200 p-5 space-y-3 hover:border-slate-300 transition-colors">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-slate-500">{label}</span>
-        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${colors[color]}`}>
+        <div
+          className={`w-9 h-9 rounded-[var(--brand-radius,8px)] flex items-center justify-center ${colors[color]}`}
+        >
           {icon}
         </div>
       </div>
@@ -241,7 +285,13 @@ function StatCard({
 }
 
 function Section({
-  title, icon, href, linkLabel, empty, emptyText, children,
+  title,
+  icon,
+  href,
+  linkLabel,
+  empty,
+  emptyText,
+  children,
 }: {
   title: string;
   icon: React.ReactNode;
@@ -252,18 +302,23 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div className="bg-white rounded-[var(--brand-radius,12px)] border border-slate-200 overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100">
         <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
           {icon}
           {title}
         </h3>
-        <Link href={href} className="text-xs text-blue-600 hover:underline font-medium">
+        <Link
+          href={href}
+          className="text-xs text-[var(--brand-primary,#2563eb)] hover:opacity-80 font-medium"
+        >
           {linkLabel}
         </Link>
       </div>
       {empty ? (
-        <div className="py-10 text-center text-sm text-slate-400">{emptyText}</div>
+        <div className="py-10 text-center text-sm text-slate-400">
+          {emptyText}
+        </div>
       ) : (
         children
       )}

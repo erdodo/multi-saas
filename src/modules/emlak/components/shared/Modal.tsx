@@ -4,11 +4,11 @@ import { useEffect } from "react";
 import { X } from "lucide-react";
 
 interface Props {
-  open:     boolean;
-  onClose:  () => void;
-  title:    string;
+  open: boolean;
+  onClose: () => void;
+  title: string;
   children: React.ReactNode;
-  size?:    "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl";
 }
 
 const SIZE_MAP = {
@@ -21,7 +21,9 @@ const SIZE_MAP = {
 export function Modal({ open, onClose, title, children, size = "md" }: Props) {
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
@@ -37,7 +39,7 @@ export function Modal({ open, onClose, title, children, size = "md" }: Props) {
       />
       {/* Panel */}
       <div
-        className={`relative bg-white rounded-2xl shadow-2xl w-full ${SIZE_MAP[size]} max-h-[90vh] flex flex-col`}
+        className={`relative bg-white rounded-[var(--brand-radius,16px)] shadow-2xl w-full ${SIZE_MAP[size]} max-h-[90vh] flex flex-col`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">

@@ -63,7 +63,7 @@ export default function QuickServiceDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 animate-in fade-in zoom-in-95">
+      <div className="bg-white rounded-[var(--brand-radius,16px)] shadow-2xl w-full max-w-md p-6 space-y-5 animate-in fade-in zoom-in-95">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-gray-900 text-lg">
             ✨ Hızlı Hizmet Ekle
@@ -85,7 +85,7 @@ export default function QuickServiceDialog({
               required
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 rounded-[var(--brand-radius,8px)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)]"
               placeholder="ör. Saç Kesimi"
             />
           </div>
@@ -103,7 +103,7 @@ export default function QuickServiceDialog({
                 onChange={(e) =>
                   setForm((f) => ({ ...f, duration: Number(e.target.value) }))
                 }
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-[var(--brand-radius,8px)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)]"
               />
             </div>
             <div>
@@ -117,7 +117,7 @@ export default function QuickServiceDialog({
                 onChange={(e) =>
                   setForm((f) => ({ ...f, price: Number(e.target.value) }))
                 }
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-[var(--brand-radius,8px)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)]"
               />
             </div>
           </div>
@@ -130,7 +130,7 @@ export default function QuickServiceDialog({
               onChange={(e) =>
                 setForm((f) => ({ ...f, color: e.target.value }))
               }
-              className="h-10 w-full rounded-lg border border-gray-300"
+              className="h-10 w-full rounded-[var(--brand-radius,8px)] border border-gray-300"
             />
           </div>
 
@@ -138,14 +138,14 @@ export default function QuickServiceDialog({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-gray-300 rounded-[var(--brand-radius,8px)] py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Vazgeç
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2.5 text-sm font-medium transition-colors disabled:opacity-60"
+              className="flex-1 bg-[var(--brand-primary,#2563eb)] hover:opacity-90 text-[var(--brand-text-on-primary,#fff)] rounded-[var(--brand-radius,8px)] py-2.5 text-sm font-medium transition-opacity disabled:opacity-60"
             >
               {saving ? "Ekleniyor..." : "Hizmet Ekle"}
             </button>

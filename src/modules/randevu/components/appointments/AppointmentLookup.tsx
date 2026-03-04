@@ -67,12 +67,12 @@ export default function AppointmentLookup({ tenantSlug }: Props) {
         <PhoneMaskInput
           value={phone}
           onChange={setPhone}
-          className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 border border-gray-300 rounded-[var(--brand-radius,12px)] px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#3b82f6)]"
         />
         <button
           type="submit"
           disabled={loading || !phone.trim()}
-          className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl px-5 py-2.5 font-medium text-sm flex items-center gap-2 transition-colors"
+          className="bg-[var(--brand-primary,#2563eb)] hover:opacity-90 disabled:opacity-50 text-[var(--brand-text-on-primary,#fff)] rounded-[var(--brand-radius,12px)] px-5 py-2.5 font-medium text-sm flex items-center gap-2 transition-opacity"
         >
           <Search className="w-4 h-4" />
           {loading ? "Aranıyor..." : "Sorgula"}
@@ -80,7 +80,7 @@ export default function AppointmentLookup({ tenantSlug }: Props) {
       </form>
 
       {error && (
-        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-[var(--brand-radius,12px)] px-4 py-3">
           {error}
         </p>
       )}
@@ -106,7 +106,7 @@ export default function AppointmentLookup({ tenantSlug }: Props) {
               <a
                 key={appt.id}
                 href={`/${tenantSlug}/randevu-panel/book/${appt.id}`}
-                className="block bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:border-blue-200 transition-all"
+                className="block bg-white rounded-[var(--brand-radius,12px)] border border-gray-200 p-4 hover:shadow-md hover:border-[var(--brand-primary,#bfdbfe)] transition-all"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3 flex-1 min-w-0">

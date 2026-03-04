@@ -14,9 +14,9 @@ export default async function CustomersPage({
   if (!session?.user?.tenantId) redirect("/login");
   const tenantId = session.user.tenantId;
   const sp = await searchParams;
-  const search    = sp.search?.trim() ?? "";
-  const page      = Math.max(1, Number(sp.page ?? 1));
-  const pageSize  = 20;
+  const search = sp.search?.trim() ?? "";
+  const page = Math.max(1, Number(sp.page ?? 1));
+  const pageSize = 20;
 
   const where = {
     tenantId,
@@ -24,9 +24,9 @@ export default async function CustomersPage({
       ? {
           OR: [
             { firstName: { contains: search } },
-            { lastName:  { contains: search } },
-            { email:     { contains: search } },
-            { phone:     { contains: search } },
+            { lastName: { contains: search } },
+            { email: { contains: search } },
+            { phone: { contains: search } },
           ],
         }
       : {}),
@@ -60,11 +60,17 @@ export default async function CustomersPage({
           defaultValue={search}
           type="search"
           placeholder="İsim, e-posta veya telefon ara..."
-          className="flex-1 bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 bg-white border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition-all"
+          style={{ borderRadius: "var(--brand-radius, 8px)" }}
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="text-white px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+          style={{
+            backgroundColor: "var(--brand-primary, #3b82f6)",
+            color: "var(--brand-text-on-primary, #fff)",
+            borderRadius: "var(--brand-radius, 8px)",
+          }}
         >
           Ara
         </button>
@@ -74,9 +80,15 @@ export default async function CustomersPage({
         <table className="w-full text-sm">
           <thead className="bg-slate-50 border-b border-slate-100">
             <tr>
-              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">Müşteri</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">İletişim</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">Kayıt Tarihi</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">
+                Müşteri
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">
+                İletişim
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">
+                Kayıt Tarihi
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
@@ -84,7 +96,11 @@ export default async function CustomersPage({
               <tr>
                 <td colSpan={3} className="text-center py-12 text-slate-400">
                   <Users className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                  <p>{search ? "Aramanızla eşleşen müşteri yok" : "Henüz müşteri eklenmemiş"}</p>
+                  <p>
+                    {search
+                      ? "Aramanızla eşleşen müşteri yok"
+                      : "Henüz müşteri eklenmemiş"}
+                  </p>
                 </td>
               </tr>
             ) : (
@@ -128,7 +144,8 @@ export default async function CustomersPage({
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-slate-500">
-            {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} / {total}
+            {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} /{" "}
+            {total}
           </p>
           <div className="flex gap-2">
             {page > 1 && (

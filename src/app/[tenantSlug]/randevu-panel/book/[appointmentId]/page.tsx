@@ -4,6 +4,7 @@ import { tr } from "date-fns/locale";
 import QRCode from "qrcode";
 import { getAppointmentById } from "@/modules/randevu/actions/appointment.actions";
 import ShareButton from "./ShareButton";
+import { getTenantBranding, brandCssVars } from "@/lib/branding";
 
 interface Params {
   params: Promise<{ tenantSlug: string; appointmentId: string }>;
@@ -28,8 +29,8 @@ const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
     },
     COMPLETED: {
       label: "Tamamlandı",
-      color: "text-blue-700",
-      bg: "bg-blue-50 border-blue-200",
+      color: "text-[var(--brand-primary,#1d4ed8)]",
+      bg: "bg-[var(--brand-primary,#3b82f6)] bg-opacity-10 border-[var(--brand-primary,#bfdbfe)] border-opacity-20",
     },
     NO_SHOW: {
       label: "Gelişmedi",
@@ -47,6 +48,8 @@ export default async function AppointmentConfirmPage({ params }: Params) {
   const { tenantSlug, appointmentId } = await params;
   const result = await getAppointmentById(appointmentId, tenantSlug);
   if (!result.success || !result.data) notFound();
+
+  const b = await getTenantBranding(tenantSlug);
 
   const appt = result.data;
   const status = STATUS_MAP[appt.status] ?? STATUS_MAP["PENDING"];
@@ -67,21 +70,32 @@ export default async function AppointmentConfirmPage({ params }: Params) {
   const startAt = appt.startAt ? new Date(appt.startAt) : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        ...brandCssVars(b),
+        background: `linear-gradient(135deg, #f8fafc 0%, ${b.primaryColor}15 100%)`,
+      }}
+    >
       <div className="w-full max-w-md space-y-4">
         {/* Hero card */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-[var(--brand-radius,16px)] shadow-xl overflow-hidden">
           {/* Colored header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 pt-8 pb-14 text-center text-white">
+          <div
+            className="px-6 pt-8 pb-14 text-center text-[var(--brand-text-on-primary,#fff)]"
+            style={{
+              background: `linear-gradient(135deg, ${b.primaryColor}, ${b.accentColor ?? b.primaryColor})`,
+            }}
+          >
             <div className="text-5xl mb-3">🎉</div>
             <h1 className="text-2xl font-bold">Randevunuz Oluşturuldu!</h1>
-            <p className="text-blue-100 text-sm mt-1">
+            <p className="text-[var(--brand-text-on-primary,#fff)] opacity-90 text-sm mt-1">
               Aşağıdaki detayları saklayın
             </p>
           </div>
 
           {/* Card body — negative margin to overlap header */}
-          <div className="-mt-8 mx-4 bg-white rounded-xl shadow-lg p-5 space-y-3">
+          <div className="-mt-8 mx-4 bg-white rounded-[var(--brand-radius,12px)] shadow-lg p-5 space-y-3">
             {/* Status badge */}
             <div
               className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${status.bg} ${status.color}`}
@@ -119,7 +133,7 @@ export default async function AppointmentConfirmPage({ params }: Params) {
               <img
                 src={qrDataUrl}
                 alt="Randevu QR Kodu"
-                className="w-36 h-36 rounded-xl shadow-md"
+                className="w-36 h-36 rounded-[var(--brand-radius,12px)] shadow-md"
               />
               <p className="text-xs text-gray-400 text-center">
                 QR kodu tarayarak randevunuzu sorgulayabilirsiniz
@@ -136,7 +150,7 @@ export default async function AppointmentConfirmPage({ params }: Params) {
               <a
                 href={qrDataUrl}
                 download={`randevu-${appt.id.slice(0, 8)}.png`}
-                className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl py-2.5 text-sm font-medium transition-colors"
+                className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-[var(--brand-radius,12px)] py-2.5 text-sm font-medium transition-colors"
               >
                 📥 QR İndir
               </a>
@@ -144,7 +158,7 @@ export default async function AppointmentConfirmPage({ params }: Params) {
 
             <a
               href={`/${tenantSlug}/randevu-panel/book`}
-              className="block text-center text-sm text-blue-600 hover:underline pt-1"
+              className="block text-center text-sm text-[var(--brand-primary,#2563eb)] hover:opacity-80 pt-1"
             >
               ← Yeni randevu al
             </a>

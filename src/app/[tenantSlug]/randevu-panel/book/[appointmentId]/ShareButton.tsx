@@ -24,7 +24,7 @@ export default function ShareButton({ url, title, text }: Props) {
   return (
     <button
       onClick={handleShare}
-      className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-2.5 text-sm font-medium transition-colors"
+      className="flex items-center justify-center gap-2 bg-[var(--brand-primary,#2563eb)] hover:opacity-90 text-[var(--brand-text-on-primary,#fff)] rounded-[var(--brand-radius,12px)] py-2.5 text-sm font-medium transition-opacity"
     >
       🔗 Paylaş
     </button>
