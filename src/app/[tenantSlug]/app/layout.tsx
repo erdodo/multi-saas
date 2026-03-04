@@ -7,17 +7,17 @@ import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 
 const FONT_STACK: Record<string, string> = {
-  inter:   "'Inter', sans-serif",
+  inter: "'Inter', sans-serif",
   poppins: "'Poppins', sans-serif",
-  roboto:  "'Roboto', sans-serif",
-  system:  "system-ui, sans-serif",
+  roboto: "'Roboto', sans-serif",
+  system: "system-ui, sans-serif",
 };
 
 const RADIUS_MAP: Record<string, string> = {
   none: "0px",
-  sm:   "4px",
-  md:   "8px",
-  lg:   "16px",
+  sm: "4px",
+  md: "8px",
+  lg: "16px",
   full: "9999px",
 };
 
@@ -71,26 +71,32 @@ export default async function TenantAppLayout({ children, params }: Props) {
   if (!tenant) return notFound();
 
   // Sadece bu tenant'ın kullanıcısı erişebilir
+  // (tenantSlug null iken boş redirect yapılmaması için null check)
   if (tenant.id !== session.user.tenantId) {
-    redirect(`/${session.user.tenantSlug ?? ""}/app`);
+    const correctSlug = session.user.tenantSlug;
+    if (correctSlug) {
+      redirect(`/${correctSlug}/app`);
+    } else {
+      redirect("/setup");
+    }
   }
 
   if (!session.user.setupCompleted) redirect("/setup");
 
-  const primaryColor    = tenant.primaryColor    ?? "#3b82f6";
-  const secondaryColor  = tenant.secondaryColor  ?? "#6366f1";
-  const accentColor     = tenant.accentColor     ?? "#10b981";
-  const textOnPrimary   = tenant.textOnPrimary   ?? "#ffffff";
-  const fontFamily      = FONT_STACK[tenant.fontFamily ?? "inter"];
-  const borderRadius    = RADIUS_MAP[tenant.borderRadius ?? "md"];
+  const primaryColor = tenant.primaryColor ?? "#3b82f6";
+  const secondaryColor = tenant.secondaryColor ?? "#6366f1";
+  const accentColor = tenant.accentColor ?? "#10b981";
+  const textOnPrimary = tenant.textOnPrimary ?? "#ffffff";
+  const fontFamily = FONT_STACK[tenant.fontFamily ?? "inter"];
+  const borderRadius = RADIUS_MAP[tenant.borderRadius ?? "md"];
 
   const cssVars: React.CSSProperties = {
-    "--brand-primary":       primaryColor,
-    "--brand-secondary":     secondaryColor,
-    "--brand-accent":        accentColor,
+    "--brand-primary": primaryColor,
+    "--brand-secondary": secondaryColor,
+    "--brand-accent": accentColor,
     "--brand-text-on-primary": textOnPrimary,
-    "--brand-font":          fontFamily,
-    "--brand-radius":        borderRadius,
+    "--brand-font": fontFamily,
+    "--brand-radius": borderRadius,
   } as React.CSSProperties;
 
   return (
@@ -103,7 +109,11 @@ export default async function TenantAppLayout({ children, params }: Props) {
         <div className="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-700">
           {tenant.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={tenant.logoUrl} alt={tenant.name} className="h-8 max-w-35 object-contain" />
+            <img
+              src={tenant.logoUrl}
+              alt={tenant.name}
+              className="h-8 max-w-35 object-contain"
+            />
           ) : (
             <div className="flex items-center gap-2">
               <div
@@ -122,7 +132,10 @@ export default async function TenantAppLayout({ children, params }: Props) {
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           <NavLinks
             tenantSlug={tenantSlug}
-            modules={tenant.tenantModules.map((tm) => ({ key: tm.module.key, name: tm.module.name }))}
+            modules={tenant.tenantModules.map((tm) => ({
+              key: tm.module.key,
+              name: tm.module.name,
+            }))}
           />
         </nav>
 
@@ -133,7 +146,10 @@ export default async function TenantAppLayout({ children, params }: Props) {
             role={session.user.role ?? ""}
             tenantSlug={tenantSlug}
             primaryColor={primaryColor}
-            modules={tenant.tenantModules.map((tm) => ({ key: tm.module.key, name: tm.module.name }))}
+            modules={tenant.tenantModules.map((tm) => ({
+              key: tm.module.key,
+              name: tm.module.name,
+            }))}
           />
         </div>
       </aside>

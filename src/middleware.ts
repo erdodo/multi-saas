@@ -26,6 +26,7 @@ export default auth((req) => {
       return NextResponse.redirect(new URL("/setup", req.nextUrl));
     }
     // Yanlış tenant slug ile erişim varsa doğru slug'a yönlendir
+    // (sadece tenantSlug mevcut VE farklıysa — null iken döngüye girme)
     const urlTenantSlug = tenantAppMatch[1];
     if (tenantSlug && urlTenantSlug !== tenantSlug) {
       const rest = tenantAppMatch[2] ?? "";
