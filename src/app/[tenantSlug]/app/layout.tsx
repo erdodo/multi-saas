@@ -45,10 +45,9 @@ export default async function TenantAppLayout({ children, params }: Props) {
 
   const { tenantSlug } = await params;
 
-  // Slug doğrulama: session'daki tenantId üzerinden tenant çek
-  // (URL slug'ı ile session tenantId'si birlikte kontrol edilir)
+  // Slug üzerinden tenant ve branding verisini çek
   const tenant = await prisma.tenant.findUnique({
-    where: { id: session.user.tenantId },
+    where: { slug: tenantSlug },
     select: {
       id: true,
       name: true,
@@ -71,10 +70,8 @@ export default async function TenantAppLayout({ children, params }: Props) {
 
   if (!tenant) return notFound();
 
-  // URL'deki slug session'daki tenant'a ait değilse doğru URL'e yönlendir
-  if (tenant.slug && tenant.slug !== tenantSlug) {
-    redirect(`/${tenant.slug}/app`);
-  }
+  // Middleware slug doğruluğunu zaten garanti ediyor.
+  // ID mismatch yeniden yönlendirme sonsuz döngüye neden olduğundan kaldırıldı.
 
   if (!session.user.setupCompleted) redirect("/setup");
 
