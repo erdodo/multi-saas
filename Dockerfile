@@ -5,6 +5,7 @@ COPY package*.json ./
 RUN npm install --frozen-lockfile || npm install
 
 # ---- build aşaması ----
+# next build → .next/standalone/server.js (next start veya next dev KULLANILMAZ)
 FROM node:24-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -17,9 +18,12 @@ ENV NEXTAUTH_URL="http://localhost:3000"
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npx prisma generate
+# next build --webpack → output:standalone → .next/standalone/server.js oluşturur
 RUN npm run build
 
 # ---- production aşaması ----
+# next start / next dev ÇALIŞMAZ.
+# Yalnızca compiled standalone output: node server.js
 FROM node:24-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
