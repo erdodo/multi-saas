@@ -44,6 +44,19 @@ const NAV = [
       },
     ],
   },
+  {
+    group: "Emlak Modülü",
+    items: [
+      { href: "/docs/emlak/genel-bakis", label: "Genel Bakış" },
+      { href: "/docs/emlak/mulkler", label: "Mülkler" },
+      { href: "/docs/emlak/kiracilar", label: "Kiracılar" },
+      { href: "/docs/emlak/sozlesmeler", label: "Sözleşmeler" },
+      { href: "/docs/emlak/odemeler", label: "Ödemeler" },
+      { href: "/docs/emlak/mal-sahipleri", label: "Mal Sahipleri" },
+      { href: "/docs/emlak/belgeler", label: "Belgeler" },
+      { href: "/docs/emlak/abonelikler", label: "Abonelikler" },
+    ],
+  },
 ];
 
 export default function DocsLayout({
