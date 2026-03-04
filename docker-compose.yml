@@ -45,7 +45,11 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: multi-saas-cloudflared
     restart: unless-stopped
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    # Config dosyasındaki ingress kuralları routing'i tanımlar (saas.erdoganyesil.org → app:3000)
+    # Token sadece kimlik doğrulama için kullanılır, routing buradan gelir.
+    volumes:
+      - ./cloudflared-config.yml:/etc/cloudflared/config.yml:ro
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       - app
     logging:

@@ -1,0 +1,15 @@
+# Cloudflare Tunnel yapılandırması
+# CLOUDFLARE_TUNNEL_TOKEN env'den okunur — bu dosya sadece ingress kurallarını tanımlar.
+#
+# Cloudflare Zero Trust → Networks → Tunnels → <tunnel> → Configure → Public Hostnames
+# bölümünden de aynı şeyi yapabilirsin. Burada tanımlayınca dashboard'a girmen gerekmez.
+
+ingress:
+  # saas.erdoganyesil.org → docker iç ağındaki app servisi
+  - hostname: saas.erdoganyesil.org
+    service: http://app:3000
+    originRequest:
+      noTLSVerify: false
+      connectTimeout: 30s
+  # Diğer tüm istekler 404
+  - service: http_status:404
