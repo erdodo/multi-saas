@@ -1,0 +1,54 @@
+# Geliştirme ortamı — rebuild gerektirmez, kaynak kodu volume olarak mount edilir.
+# Kullanım:
+#   sudo docker compose -f docker-compose.dev.yml up -d
+#   Kod değişikliklerinde Next.js otomatik hot-reload yapar.
+#   Sadece package.json değişince: sudo docker compose -f docker-compose.dev.yml restart app
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: multi-saas-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgresql
+      POSTGRES_PASSWORD: postgresql
+      POSTGRES_DB: postgresql
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgresql"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: node:24-alpine
+    container_name: multi-saas-app-dev
+    restart: unless-stopped
+    working_dir: /app
+    # Kaynak kodu doğrudan mount — rebuild gerektirmez
+    volumes:
+      - .:/app
+      - /app/.next        # .next klasörünü host'tan izole et
+      - /app/node_modules # node_modules'ı container içinde tut
+    command: >
+      sh -c "
+        apk add --no-cache openssl &&
+        npm install &&
+        node node_modules/prisma/build/index.js generate &&
+        node node_modules/prisma/build/index.js db push --skip-generate &&
+        npm run dev
+      "
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgresql:postgresql@postgres:5432/postgresql
+      NEXTAUTH_SECRET: dev-secret-change-me
+      NEXTAUTH_URL: http://localhost:3000
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_dev_data:

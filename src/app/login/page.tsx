@@ -5,48 +5,55 @@ import { ArrowLeft, User, Lock } from "lucide-react";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
     try {
       const result = await signIn("credentials", {
-        email: formData.get("email") as string,
-        password: formData.get("password") as string,
+        email,
+        password,
         redirect: false,
       });
 
-      // NextAuth v4 uyumluluk: result.error kontrolü
       if (result?.error) {
-        setError("E-posta veya şifre hatalı. Lütfen tekrar deneyin.");
+        toast.error("E-posta veya şifre hatalı.", {
+          description: "Bilgilerinizi kontrol edip tekrar deneyin.",
+        });
         return;
       }
 
-      // Başarılı giriş
+      toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
       router.push("/app");
       router.refresh();
     } catch (err: unknown) {
-      // NextAuth v5 beta: hataları exception olarak fırlatır
-      const message =
-        err instanceof Error ? err.message : String(err);
+      const msg = err instanceof Error ? err.message : String(err);
 
       if (
-        message.includes("CredentialsSignin") ||
-        message.includes("credentials") ||
-        message.includes("Credentials")
+        msg.includes("CredentialsSignin") ||
+        msg.toLowerCase().includes("credentials")
       ) {
-        setError("E-posta veya şifre hatalı. Lütfen tekrar deneyin.");
+        toast.error("E-posta veya şifre hatalı.", {
+          description: "Bilgilerinizi kontrol edip tekrar deneyin.",
+        });
+      } else if (msg.toLowerCase().includes("fetch") || msg.toLowerCase().includes("network")) {
+        toast.error("Sunucuya bağlanılamadı.", {
+          description: "İnternet bağlantınızı kontrol edin.",
+        });
       } else {
-        setError("Giriş sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+        toast.error("Giriş sırasında beklenmeyen bir hata oluştu.", {
+          description: msg,
+        });
       }
     } finally {
       setIsLoading(false);
@@ -69,12 +76,6 @@ export default function LoginPage() {
             İşletmenizi yönetmeye kaldığınız yerden devam edin.
           </p>
         </div>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">

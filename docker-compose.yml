@@ -26,7 +26,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgresql:postgresql@postgres:5432/postgresql
       NEXTAUTH_SECRET: jV0sMKY0MQP7Vzkf9p1Gi04Ueb3LCwaHC2L0zq1ofFk=
-      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_URL: https://saas.erdoganyesil.org
       NODE_ENV: production
     depends_on:
       postgres:

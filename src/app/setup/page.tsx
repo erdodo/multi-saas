@@ -13,6 +13,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { completeSetup } from "./actions";
+import { toast } from "sonner";
 
 const MODULE_META: Record<
   string,
@@ -52,7 +53,6 @@ export default function SetupPage() {
   const [slugPreview, setSlugPreview] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Modülleri DB'den yükle
   useEffect(() => {
@@ -62,6 +62,10 @@ export default function SetupPage() {
       if (res.ok) {
         const data = await res.json();
         setModules(data);
+      } else {
+        toast.error("Modüller yüklenemedi.", {
+          description: "Sayfayı yenileyip tekrar deneyin.",
+        });
       }
       setIsLoading(false);
     }
@@ -99,16 +103,17 @@ export default function SetupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedModules.length === 0) {
-      setError("Lütfen en az bir modül seçin.");
+      toast.error("En az bir modül seçmelisiniz.");
       return;
     }
     if (!slug || slug.length < 2) {
-      setError("Lütfen geçerli bir URL adresi girin.");
+      toast.error("Geçerli bir URL adresi girin.", {
+        description: "En az 2 karakter, yalnızca küçük harf, rakam ve tire.",
+      });
       return;
     }
 
     setIsSubmitting(true);
-    setError(null);
 
     const formData = new FormData();
     formData.set("slug", slug);
@@ -118,9 +123,13 @@ export default function SetupPage() {
 
     if (!result.success) {
       setIsSubmitting(false);
-      setError(result.error || "Bir hata oluştu.");
+      toast.error(result.error || "Kurulum tamamlanamadı.", {
+        description: "Lütfen bilgilerinizi kontrol edip tekrar deneyin.",
+      });
       return;
     }
+
+    toast.success("Kurulum tamamlandı! Panelinize yönlendiriliyorsunuz.");
 
     // Session'ı güncelle - setupCompleted: true, tenantSlug
     await update({ setupCompleted: true, tenantSlug: result.tenantSlug });
@@ -255,13 +264,6 @@ export default function SetupPage() {
               </p>
             )}
           </div>
-
-          {/* Hata mesajı */}
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
 
           {/* Submit */}
           <div className="flex justify-center">

@@ -6,16 +6,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { registerUser } from "./actions";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
@@ -26,26 +25,40 @@ export default function RegisterPage() {
 
     if (!result.success) {
       setIsLoading(false);
-      setError(result.error || "Bilinmeyen bir hata oluştu.");
+      toast.error(result.error || "Hesap oluşturulamadı.", {
+        description: "Lütfen bilgilerinizi kontrol edip tekrar deneyin.",
+      });
       return;
     }
 
+    toast.success("Hesabınız oluşturuldu!", { description: "Oturum açılıyor..." });
+
     // 2. Otomatik giriş yap
-    const signInResult = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const signInResult = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    setIsLoading(false);
-
-    if (signInResult?.error) {
-      setError("Hesabınız oluşturuldu fakat giriş yapılamadı. Lütfen giriş yapın.");
+      if (signInResult?.error) {
+        toast.warning("Otomatik giriş yapılamadı.", {
+          description: "Lütfen e-posta ve şifrenizle giriş yapın.",
+        });
+        setIsLoading(false);
+        router.push("/login");
+        return;
+      }
+    } catch {
+      // NextAuth v5 bazı senaryolarda exception fırlatır
+      toast.warning("Hesabınız oluşturuldu. Lütfen giriş yapın.");
+      setIsLoading(false);
       router.push("/login");
       return;
     }
 
     // 3. Setup sayfasına yönlendir
+    setIsLoading(false);
     router.push("/setup");
   };
 
@@ -67,12 +80,6 @@ export default function RegisterPage() {
             Ücretsiz kaydolun ve işletmenizi hemen yönetmeye başlayın.
           </p>
         </div>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
