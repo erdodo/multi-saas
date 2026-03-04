@@ -24,45 +24,45 @@ export default function OnlineRezervasyonPage() {
         </p>
       </div>
 
+      {/* Sayfa Başlığı */}
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-slate-900">Sayfa Başlığı</h2>
         <p className="text-sm text-slate-600">
           Üstte işletme logosu (veya baş harfi), işletme adı ve adres
           gösterilir. Tüm renkler ve görsel kimlik{" "}
-          <strong>Marka ayarlarından</strong> otomatik olarak uygulanır.
+          <strong>Marka Ayarlarından</strong> otomatik uygulanır.
         </p>
       </section>
 
-      <section className="space-y-3">
+      {/* Rezervasyon Akışı */}
+      <section className="space-y-4">
         <h2 className="text-xl font-bold text-slate-900">
-          Rezervasyon Akışı (Adımlar)
+          Rezervasyon Akışı — 4 Adım
         </h2>
-        <ol className="space-y-4">
+        <p className="text-sm text-slate-600">
+          Her adımda geri dönülebilir. İlerleme çubuğu her zaman görünür.
+        </p>
+        <ol className="space-y-3">
           {[
             {
               step: "1",
               title: "Hizmet Seç",
-              desc: "Aktif hizmetler kart olarak listelenir. Süre ve fiyat her kartta gösterilir. Bir hizmet seçilir.",
+              desc: "Aktif hizmetler kart olarak listelenir. Hizmet adı, süre (dk) ve fiyat her kartta gösterilir.",
             },
             {
               step: "2",
               title: "Personel / Uzman Seç",
-              desc: 'Seçilen hizmeti sunabilen personel listelenir. "Fark etmez" seçeneği de sunulabilir.',
+              desc: "Seçilen hizmeti sunabilen personel listelenir. Her kart personelin adı ve biyografisini içerir.",
             },
             {
               step: "3",
-              title: "Tarih Seç",
-              desc: "Takvimden bir gün seçilir. Bugünden itibaren ayarlanan rezervasyon penceresi (gün sayısı) kadar ileriye gidilebilir.",
+              title: "Tarih & Saat Seç ✦",
+              desc: "Animasyonlu aylık takvim açılır. Geçmiş günler ve rezervasyon penceresi dışı günler seçilemez. Bir güne tıklandığında animasyonlu geçişle gün görünümüne geçilir ve müsait saatler grid olarak listelenir. Dolu saatler (randevu, izin, mola) gri ve seçilemez durumda gösterilir.",
             },
             {
               step: "4",
-              title: "Saat Seç",
-              desc: "Seçilen gün ve personele göre uygun saat dilimleri listelenir. Dolu slotlar griyken boş slotlar tıklanabilir durumdadır.",
-            },
-            {
-              step: "5",
-              title: "Bilgi Gir ve Onayla",
-              desc: 'Ad soyad ve telefon numarası girilir. "Randevu Al" butonu ile istek gönderilir.',
+              title: "Bilgi Gir ve Onayla ✦",
+              desc: "Ad soyad (zorunlu), telefon (zorunlu, 0XXX XXX XX XX formatında otomatik maske) ve e-posta (isteğe bağlı, blur'da format kontrolü) girilir. «Randevuyu Onayla» butonu ile randevu oluşturulur.",
             },
           ].map((s) => (
             <li
@@ -79,8 +79,96 @@ export default function OnlineRezervasyonPage() {
             </li>
           ))}
         </ol>
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-sm text-indigo-800">
+          <strong>✦ Yeni:</strong> Tarih/saat seçimi artık iki adım yerine tek
+          animasyonlu ekranda gerçekleşir. Telefon alanı otomatik maske uygular.
+        </div>
       </section>
 
+      {/* Onay Sayfası */}
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold text-slate-900">
+          Randevu Onay Sayfası ✦
+        </h2>
+        <p className="text-sm text-slate-600">
+          Rezervasyon tamamlandığında müşteri otomatik olarak onay sayfasına
+          yönlendirilir:
+        </p>
+        <p className="text-xs text-slate-400 font-mono">
+          URL: /{"{tenantSlug}"}/randevu-panel/book/{"{randevuId}"}
+        </p>
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="text-left px-4 py-2.5 font-semibold text-slate-700 w-36">
+                  Bölüm
+                </th>
+                <th className="text-left px-4 py-2.5 font-semibold text-slate-700">
+                  Detay
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {[
+                {
+                  f: "Durum Badge",
+                  d: "Bekliyor / Onaylandı / İptal gibi renkli etiket",
+                },
+                {
+                  f: "Randevu Detayı",
+                  d: "Hizmet, uzman, tarih & saat, ad soyad, konum (varsa), not",
+                },
+                {
+                  f: "QR Kod ✦",
+                  d: "Server-side üretilir. Müşteri, QR kodu taratarak randevusuna ulaşabilir.",
+                },
+                {
+                  f: "Paylaş ✦",
+                  d: "Web Share API ile paylaşım (desteklenmiyorsa link kopyalanır)",
+                },
+                {
+                  f: "QR İndir ✦",
+                  d: "PNG dosyası olarak cihaza kaydedilebilir",
+                },
+              ].map((r) => (
+                <tr key={r.f}>
+                  <td className="px-4 py-2.5 font-medium text-slate-900 align-top">
+                    {r.f}
+                  </td>
+                  <td className="px-4 py-2.5 text-slate-500">{r.d}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Randevu Sorgulama */}
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold text-slate-900">
+          Randevu Sorgulama ✦
+        </h2>
+        <p className="text-sm text-slate-600">
+          Müşteriler telefon numaralarıyla geçmiş randevularına ulaşabilir:
+        </p>
+        <p className="text-xs text-slate-400 font-mono">
+          URL: /{"{tenantSlug}"}/randevu-panel/sorgula
+        </p>
+        <ol className="list-decimal list-inside space-y-1.5 text-sm text-slate-600 pl-2">
+          <li>
+            Telefon numarası girilir (0XXX XXX XX XX maskesi otomatik uygulanır)
+          </li>
+          <li>«Sorgula» butonuna tıklanır</li>
+          <li>
+            Eşleşen randevular kart olarak listelenir (hizmet, uzman, tarih,
+            durum)
+          </li>
+          <li>Bir karta tıklanınca randevunun onay sayfası açılır</li>
+        </ol>
+      </section>
+
+      {/* Onay Senaryoları */}
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-slate-900">Onay Senaryoları</h2>
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -95,7 +183,7 @@ export default function OnlineRezervasyonPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100">
               <tr>
                 <td className="px-4 py-2.5 text-slate-900 font-medium">
                   Otomatik Onayla: Açık
@@ -125,17 +213,22 @@ export default function OnlineRezervasyonPage() {
         </div>
       </section>
 
+      {/* Hata Durumları */}
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-slate-900">Hata Durumları</h2>
         <div className="space-y-2">
           {[
             {
               h: "Hizmet bulunamadı",
-              d: "İşletmede hiç aktif hizmet tanımlı değil; sayfa bunun yerine bir uyarı gösterir",
+              d: "İşletmede hiç aktif hizmet tanımlı değilse sayfa uyarı gösterir",
             },
             {
               h: "Seçilen saat doldu",
               d: "Başka biri aynı saati aldıysa form yenilenir ve dolu slot gösterilir",
+            },
+            {
+              h: "Geçersiz e-posta formatı",
+              d: "E-posta alanından çıkıldığında (blur) @ ve . kontrolü yapılır; geçersizse kırmızı uyarı gösterilir",
             },
             {
               h: "İşletme kurulumu tamamlanmamış",

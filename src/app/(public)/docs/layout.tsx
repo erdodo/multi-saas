@@ -42,6 +42,7 @@ const NAV = [
         href: "/docs/randevu/online-rezervasyon",
         label: "Online Rezervasyon Formu",
       },
+      { href: "/docs/randevu/sorgulama", label: "Randevu Sorgulama" },
     ],
   },
   {

@@ -39,6 +39,7 @@ model Tenant {
   notificationLogs      NotificationLog[]
   services              Service[]
   staffs                Staff[]
+  staffBreaks           StaffBreak[]
   tenantModules         TenantModule[]
   settings              TenantSettings?
   timeOffs              TimeOff[]
@@ -177,6 +178,7 @@ model Staff {
   appointments      Appointment[]
   availability      Availability[]
   availabilityRules AvailabilityRule[]
+  staffBreaks       StaffBreak[]
   location          Location?          @relation(fields: [locationId], references: [id])
   tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   staffServices     StaffService[]
@@ -230,6 +232,21 @@ model TimeOff {
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([staffId, startAt, endAt])
+}
+
+model StaffBreak {
+  id        String  @id @default(uuid())
+  staffId   String
+  tenantId  String
+  dayOfWeek Int     // 0=Pazar, 1=Pazartesi ... 6=Cumartesi
+  startTime String  // "12:00"
+  endTime   String  // "13:00"
+  label     String? // "Öğle Arası"
+  staff     Staff   @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([staffId])
+  @@index([tenantId])
 }
 
 model Holiday {

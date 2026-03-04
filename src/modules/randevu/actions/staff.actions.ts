@@ -8,10 +8,12 @@ import {
   updateStaffSchema,
   setAvailabilitySchema,
   createTimeOffSchema,
+  createStaffBreakSchema,
   type CreateStaffInput,
   type UpdateStaffInput,
   type SetAvailabilityInput,
   type CreateTimeOffInput,
+  type CreateStaffBreakInput,
 } from "../schemas";
 import { logger } from "../lib/logger";
 
@@ -181,5 +183,48 @@ export async function createTimeOff(data: CreateTimeOffInput, tenantId: string) 
   } catch (err) {
     logger.error({ err }, "createTimeOff hatası");
     return { success: false, error: "İzin kaydı eklenirken hata oluştu" };
+  }
+}
+
+// ─── Mola ekle ────────────────────────────────────────────────────────────────
+export async function createStaffBreak(data: CreateStaffBreakInput, tenantId: string) {
+  try {
+    const validated = createStaffBreakSchema.parse(data);
+    const staff = await prisma.staff.findFirst({ where: { id: validated.staffId, tenantId } });
+    if (!staff) return { success: false, error: "Personel bulunamadı" };
+    const brk = await prisma.staffBreak.create({ data: { ...validated, tenantId } });
+    revalidatePath(`/randevu-panel/dashboard`);
+    return { success: true, data: brk };
+  } catch (err) {
+    logger.error({ err }, "createStaffBreak hatası");
+    return { success: false, error: "Mola eklenirken hata oluştu" };
+  }
+}
+
+// ─── Mola listesi ──────────────────────────────────────────────────────────────
+export async function getStaffBreaks(staffId: string, tenantId: string) {
+  try {
+    const breaks = await prisma.staffBreak.findMany({
+      where: { staffId, tenantId },
+      orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
+    });
+    return { success: true, data: breaks };
+  } catch (err) {
+    logger.error({ err }, "getStaffBreaks hatası");
+    return { success: false, error: "Molalar alınırken hata oluştu" };
+  }
+}
+
+// ─── Mola sil ────────────────────────────────────────────────────────────────
+export async function deleteStaffBreak(id: string, tenantId: string) {
+  try {
+    const existing = await prisma.staffBreak.findFirst({ where: { id, tenantId } });
+    if (!existing) return { success: false, error: "Mola bulunamadı" };
+    await prisma.staffBreak.delete({ where: { id } });
+    revalidatePath(`/randevu-panel/dashboard`);
+    return { success: true };
+  } catch (err) {
+    logger.error({ err }, "deleteStaffBreak hatası");
+    return { success: false, error: "Mola silinirken hata oluştu" };
   }
 }

@@ -44,12 +44,29 @@ Bu döküman, birden fazla alt modüle sahip, geniş çaplı ve multi-tenant (ç
 
 ## 🧩 Alt Modüller (Daha Sonra Geliştirilecek İçerikler)
 
-### A. Randevu Modülü (`/app/randevu`)
+### A. Randevu Paneli (`/{slug}/randevu-panel`)
 
-- **Hedef Kitle:** Berberler, özel öğretmenler, diyetisyenler, doktorlar vb.
-- **Özellikler:** Randevu oluşturma, işletme takvimi, müşteri takip, SMS/WhatsApp üzerinden randevu onay ve hatırlatma bildirimleri.
+- **Hedef Kitle:** Berberler, özel öğretmenler, diyetisyenler, doktorlar, güzellik salonları vb.
+- **Admin Panel Özellikleri:**
+  - Personel oluşturma/düzenleme (çalışma saatleri, hizmetler, takvim rengi)
+  - **Personel İzin Tanımlama:** Tarih aralığı + sebep ile izin ekleme ★
+  - **Mola Tanımlama:** Gün + saat aralığı bazında mola (ör. öğle arası). Bu saatler booking ekranında dolu görünür ★
+  - **Hızlı Hizmet Ekleme:** Personel eklerken hizmet yoksa inline dialog ile hızlı hizmet tanımlama ★
+  - Hizmet oluşturma/düzenleme (süre, fiyat, renk, buffer time)
+  - Takvim görünümü (günlük/haftalık), randevu durum yönetimi
+  - Müşteri listesi, raporlar, gelir takibi, tatil tanımlama
+  - Tenant ayarları (slot aralığı, min notice, booking window, otomatik onay)
+- **Müşteri Booking Özellikleri:**
+  - 4 adımlı akış: Hizmet → Uzman → Tarih&Saat → Bilgiler
+  - **Animasyonlu Takvim Seçici:** Aylık görünüm → güne tıklayınca gün görünümüne animasyonlu geçiş. Müsait saatler grid olarak listelenir ★
+  - **Telefon Maskesi:** `0XXX XXX XX XX` formatı otomatik uygulanır ★
+  - **E-posta Doğrulama:** `@` ve `.` kontrolü, blur'da anlık hata gösterimi ★
+  - **Randevu Onay Sayfası:** QR kod (server-side), paylaş (Web Share API), QR indir ★
+  - **Randevu Sorgulama:** Telefon numarası ile geçmiş randevulara erişim ★
 
-### B. Emlak Modülü (`/app/emlak`)
+> 📄 Detaylı teknik dokümantasyon: [`docs/randevu-panel.md`](docs/randevu-panel.md)
+
+### B. Emlak Modülü (`/{slug}/emlak-panel`)
 
 - **Hedef Kitle:** Emlakçılar, mülk yöneticileri.
 - **Özellikler:** Satılık/Kiralık listelemesi, güncel ve geçmiş sözleşmelerin tutulması, kiracı profili. (İleride Sahibinden.com entegrasyonu).

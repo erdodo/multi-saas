@@ -77,12 +77,30 @@ export async function getAvailableSlots(
       select: { startAt: true, endAt: true },
     });
 
+    // Personel mola saatlerini dolu randevu gibi işle
+    const staffBreaks = await prisma.staffBreak.findMany({
+      where: { staffId, dayOfWeek },
+    });
+    const breakBlocks = staffBreaks.map((b) => ({
+      startAt: fromZonedTime(
+        new Date(`${dateStr}T${b.startTime}:00`),
+        timezone
+      ),
+      endAt: fromZonedTime(
+        new Date(`${dateStr}T${b.endTime}:00`),
+        timezone
+      ),
+    }));
+
     const slots = generateTimeSlots(
       targetDate,
       { startTime: availRule.startTime, endTime: availRule.endTime },
-      existingAppointments
-        .filter((a) => a.startAt !== null && a.endAt !== null)
-        .map((a) => ({ startAt: a.startAt as Date, endAt: a.endAt as Date })),
+      [
+        ...existingAppointments
+          .filter((a) => a.startAt !== null && a.endAt !== null)
+          .map((a) => ({ startAt: a.startAt as Date, endAt: a.endAt as Date })),
+        ...breakBlocks,
+      ],
       Number(service.duration),
       Number(service.bufferTime),
       settings?.slotIntervalMinutes ?? 15,
@@ -416,5 +434,57 @@ export async function getDashboardStats(tenantId: string) {
   } catch (err) {
     logger.error({ err }, "getDashboardStats hatası");
     return { success: false, error: "İstatistikler alınırken hata oluştu" };
+  }
+}
+
+// ─── Randevu detayı (onay sayfası) ────────────────────────────────────────────
+export async function getAppointmentById(id: string, tenantSlug: string) {
+  try {
+    const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } });
+    if (!tenant) return { success: false, error: "İşletme bulunamadı" };
+
+    const appointment = await prisma.appointment.findFirst({
+      where: { id, tenantId: tenant.id },
+      include: {
+        service:  { select: { name: true, duration: true, color: true } },
+        staff:    { select: { name: true } },
+        customer: { select: { firstName: true, lastName: true } },
+        location: { select: { name: true } },
+      },
+    });
+    if (!appointment) return { success: false, error: "Randevu bulunamadı" };
+    return { success: true, data: appointment };
+  } catch (err) {
+    logger.error({ err }, "getAppointmentById hatası");
+    return { success: false, error: "Randevu alınırken hata oluştu" };
+  }
+}
+
+// ─── Telefona göre randevular (sorgulama sayfası) ─────────────────────────────
+export async function getAppointmentsByPhone(phone: string, tenantSlug: string) {
+  try {
+    const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } });
+    if (!tenant) return { success: false, error: "İşletme bulunamadı" };
+
+    const normalized = phone.replace(/\s/g, "");
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        tenantId: tenant.id,
+        OR: [
+          { guestPhone: { contains: normalized } },
+          { customer:   { phone: { contains: normalized } } },
+        ],
+      },
+      orderBy: { startAt: "desc" },
+      take: 20,
+      include: {
+        service:  { select: { name: true, color: true } },
+        staff:    { select: { name: true } },
+      },
+    });
+    return { success: true, data: appointments };
+  } catch (err) {
+    logger.error({ err }, "getAppointmentsByPhone hatası");
+    return { success: false, error: "Randevular alınırken hata oluştu" };
   }
 }
