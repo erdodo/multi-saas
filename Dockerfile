@@ -27,14 +27,16 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN apk add --no-cache libc6-compat
 
-# Tüm node_modules (prisma CLI dahil)
-COPY --from=builder /app/node_modules ./node_modules
-
-# Next.js build çıktısı
+# Önce standalone output (kendi minimal node_modules'ıyla gelir)
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
+
+# Prisma paketlerini standalone'un node_modules'ının ÜSTÜNE kopyala
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
 # Başlangıç scripti
 COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
