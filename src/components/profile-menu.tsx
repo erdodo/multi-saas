@@ -5,7 +5,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import {
   User, ChevronDown, ChevronRight, Layers, Building2,
-  Palette, KeyRound, LogOut, CalendarDays, LayoutDashboard,
+  Palette, KeyRound, LogOut, CalendarDays, LayoutDashboard, Home,
 } from "lucide-react";
 
 interface ModuleItem {
@@ -24,10 +24,12 @@ interface Props {
 
 const MODULE_ICON: Record<string, React.ReactNode> = {
   randevu: <CalendarDays className="w-4 h-4" />,
+  emlak:   <Home className="w-4 h-4" />,
 };
 
 const MODULE_HREF: Record<string, (slug: string) => string> = {
   randevu: (slug) => `/${slug}/randevu-panel/dashboard`,
+  emlak:   (slug) => `/${slug}/emlak-panel/dashboard`,
 };
 
 export function ProfileMenu({ name, email, role, tenantSlug, primaryColor = "#3b82f6", modules = [] }: Props) {

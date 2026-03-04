@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -29,20 +29,27 @@ model Tenant {
   fontFamily        String?            @default("inter")
   borderRadius      String?            @default("md")
   darkMode          Boolean            @default(false)
-  appointments      Appointment[]
-  auditLogs         AuditLog[]
-  availabilityRules AvailabilityRule[]
-  cancelPolicies    CancelPolicy?
-  customers         Customer[]
-  holidays          Holiday[]
-  locations         Location[]
-  notificationLogs  NotificationLog[]
-  services          Service[]
-  staffs            Staff[]
-  tenantModules     TenantModule[]
-  settings          TenantSettings?
-  timeOffs          TimeOff[]
-  users             User[]
+  appointments          Appointment[]
+  auditLogs             AuditLog[]
+  availabilityRules     AvailabilityRule[]
+  cancelPolicies        CancelPolicy?
+  customers             Customer[]
+  holidays              Holiday[]
+  locations             Location[]
+  notificationLogs      NotificationLog[]
+  services              Service[]
+  staffs                Staff[]
+  tenantModules         TenantModule[]
+  settings              TenantSettings?
+  timeOffs              TimeOff[]
+  users                 User[]
+  properties            Property[]
+  propertyOwners        PropertyOwner[]
+  propertyTenants       PropertyTenant[]
+  leases                Lease[]
+  leasePayments         LeasePayment[]
+  propertySubscriptions PropertySubscription[]
+  propertyDocuments     PropertyDocument[]
 
   @@index([slug])
 }
@@ -345,4 +352,215 @@ model TenantSettings {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   tenant                Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EMLAK MODELLERİ
+// ═══════════════════════════════════════════════════════════════════
+
+model Property {
+  id              String                 @id @default(uuid())
+  tenantId        String
+  ownerId         String?
+  title           String
+  type            String                 @default("APARTMENT") // APARTMENT | HOUSE | LAND | SHOP | OFFICE | OTHER
+  status          String                 @default("AVAILABLE") // AVAILABLE | RENTED | FOR_SALE | SOLD | MAINTENANCE
+  city            String?
+  district        String?
+  neighborhood    String?
+  address         String?
+  postalCode      String?
+  latitude        Float?
+  longitude       Float?
+  squareMeters    Float?
+  roomCount       String?                // "2+1", "3+1", "4+2"...
+  floorNumber     Int?
+  totalFloors     Int?
+  hasElevator     Boolean                @default(false)
+  isFurnished     Boolean                @default(false)
+  hasParking      Boolean                @default(false)
+  hasBalcony      Boolean                @default(false)
+  buildingAge     Int?
+  heatingType     String?                // CENTRAL | INDIVIDUAL | FLOOR | STOVE | NONE
+  notes           String?
+  purchasePrice   Float?
+  purchaseCurrency String?              @default("TRY")
+  purchaseDate    DateTime?
+  marketValue     Float?
+  isActive        Boolean                @default(true)
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  tenant          Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  owner           PropertyOwner?         @relation(fields: [ownerId], references: [id])
+  leases          Lease[]
+  subscriptions   PropertySubscription[]
+  documents       PropertyDocument[]
+  photos          PropertyPhoto[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([ownerId])
+}
+
+model PropertyOwner {
+  id             String     @id @default(uuid())
+  tenantId       String
+  firstName      String
+  lastName       String
+  nationalId     String?    // T.C. Kimlik No
+  taxNo          String?    // Vergi No
+  phone          String?
+  phone2         String?
+  email          String?
+  address        String?
+  bankName       String?
+  iban           String?
+  accountHolderName String?
+  notes          String?
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  properties     Property[]
+  leases         Lease[]
+
+  @@index([tenantId])
+}
+
+model PropertyTenant {
+  id              String    @id @default(uuid())
+  tenantId        String
+  firstName       String
+  lastName        String
+  nationalId      String?
+  phone           String?
+  phone2          String?
+  email           String?
+  emergencyContact String?
+  emergencyPhone  String?
+  notes           String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  leases          Lease[]
+
+  @@index([tenantId])
+}
+
+model Lease {
+  id               String         @id @default(uuid())
+  tenantId         String
+  propertyId       String
+  propertyTenantId String
+  ownerId          String?
+  startDate        DateTime
+  endDate          DateTime
+  rentAmount       Float
+  currency         String         @default("TRY")
+  paymentDayOfMonth Int           @default(1)  // Ayın kaçında ödenecek
+  depositAmount    Float          @default(0)
+  depositPaid      Boolean        @default(false)
+  depositReturnDate DateTime?
+  contractUrl      String?
+  status           String         @default("ACTIVE") // ACTIVE | ENDED | TERMINATED
+  terminationReason String?
+  autoRenew        Boolean        @default(false)
+  renewalRate      Float?         // Yenileme zam oranı (%)
+  notes            String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  tenant           Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property         Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyTenant   PropertyTenant @relation(fields: [propertyTenantId], references: [id])
+  owner            PropertyOwner? @relation(fields: [ownerId], references: [id])
+  payments         LeasePayment[]
+  documents        PropertyDocument[]
+
+  @@index([tenantId])
+  @@index([propertyId])
+  @@index([propertyTenantId])
+  @@index([status])
+}
+
+model LeasePayment {
+  id              String    @id @default(uuid())
+  tenantId        String
+  leaseId         String
+  dueDate         DateTime
+  amount          Float
+  currency        String    @default("TRY")
+  paidAt          DateTime?
+  paidAmount      Float?
+  paymentMethod   String?   // CASH | BANK_TRANSFER | CHECK | OTHER
+  receiptNo       String?
+  status          String    @default("PENDING") // PENDING | PAID | OVERDUE | PARTIAL
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lease           Lease     @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([leaseId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model PropertySubscription {
+  id              String    @id @default(uuid())
+  tenantId        String
+  propertyId      String
+  type            String    // ELECTRICITY | NATURAL_GAS | WATER | INTERNET | PHONE | CABLE_TV | OTHER
+  subscriberName  String?
+  subscriberNo    String?
+  provider        String?
+  contractNo      String?
+  estimatedMonthlyAmount Float?
+  currency        String    @default("TRY")
+  startDate       DateTime?
+  endDate         DateTime?
+  isActive        Boolean   @default(true)
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property        Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([propertyId])
+}
+
+model PropertyDocument {
+  id               String    @id @default(uuid())
+  tenantId         String
+  propertyId       String?
+  leaseId          String?
+  type             String    // DEED | CONTRACT | INSURANCE | INVOICE | PERMIT | TAX | OTHER
+  title            String
+  fileUrl          String?
+  expiresAt        DateTime?
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property         Property? @relation(fields: [propertyId], references: [id])
+  lease            Lease?    @relation(fields: [leaseId], references: [id])
+
+  @@index([tenantId])
+  @@index([propertyId])
+  @@index([leaseId])
+}
+
+model PropertyPhoto {
+  id          String   @id @default(uuid())
+  propertyId  String
+  url         String
+  caption     String?
+  isPrimary   Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
 }

@@ -7,6 +7,7 @@ import {
   Users,
   CalendarDays,
   Scissors,
+  Home,
 } from "lucide-react";
 
 interface Props { tenantSlug: string }
@@ -20,6 +21,7 @@ export function NavLinks({ tenantSlug }: Props) {
     { href: `${base}/customers`, label: "Müşteriler",     icon: Users,           exact: false },
     { href: `${base}/calendar`,  label: "Takvim",         icon: CalendarDays,    exact: false },
     { href: `${base}/randevu`,   label: "Randevu Modülü", icon: Scissors,        exact: false },
+    { href: `${base}/emlak`,     label: "Emlak Modülü",   icon: Home,            exact: false },
   ];
 
   const isActive = (href: string, exact: boolean) =>
