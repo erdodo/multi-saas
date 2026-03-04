@@ -16,11 +16,11 @@ import {
 } from "lucide-react";
 
 const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
-  PENDING:   { label: "Beklemede", cls: "bg-yellow-100 text-yellow-800" },
-  CONFIRMED: { label: "Onaylı",    cls: "bg-blue-100 text-blue-800" },
-  COMPLETED: { label: "Tamamlandı",cls: "bg-green-100 text-green-800" },
-  CANCELLED: { label: "İptal",     cls: "bg-gray-100 text-gray-600" },
-  NO_SHOW:   { label: "Gelmedi",   cls: "bg-red-100 text-red-800" },
+  PENDING: { label: "Beklemede", cls: "bg-yellow-100 text-yellow-800" },
+  CONFIRMED: { label: "Onaylı", cls: "bg-blue-100 text-blue-800" },
+  COMPLETED: { label: "Tamamlandı", cls: "bg-green-100 text-green-800" },
+  CANCELLED: { label: "İptal", cls: "bg-gray-100 text-gray-600" },
+  NO_SHOW: { label: "Gelmedi", cls: "bg-red-100 text-red-800" },
 };
 
 interface Props {
@@ -44,21 +44,49 @@ export default async function RandevuPage({ params }: Props) {
     prisma.staff.count({ where: { tenantId, isActive: true } }),
   ]);
 
-  const todayApps = appointments.filter((a) => a.startTime && isToday(a.startTime));
-  const weekApps  = appointments.filter((a) => a.startTime && isThisWeek(a.startTime, { weekStartsOn: 1 }));
+  const todayApps = appointments.filter(
+    (a) => a.startTime && isToday(a.startTime),
+  );
+  const weekApps = appointments.filter(
+    (a) => a.startTime && isThisWeek(a.startTime, { weekStartsOn: 1 }),
+  );
   const revenueTotal = appointments
     .filter((a) => a.status === "COMPLETED")
-    .reduce((sum, a) => sum + a.service.price, 0);
+    .reduce((sum, a) => sum + Number(a.service.price), 0);
   const recent = appointments.slice(0, 10);
 
   const bookingUrl = tenant?.slug ? `/${tenant.slug}/randevu-panel/book` : null;
-  const panelUrl   = `/${tenant?.slug ?? tenantSlug}/randevu-panel/dashboard`;
+  const panelUrl = `/${tenant?.slug ?? tenantSlug}/randevu-panel/dashboard`;
 
   const stats = [
-    { label: "Bugünkü Randevu",    value: todayApps.length,              icon: Calendar,     color: "text-blue-600",   bg: "bg-blue-50"   },
-    { label: "Bu Hafta",           value: weekApps.length,               icon: TrendingUp,   color: "text-indigo-600", bg: "bg-indigo-50" },
-    { label: "Aktif Personel",     value: staffCount,                    icon: Users,        color: "text-emerald-600",bg: "bg-emerald-50"},
-    { label: "Toplam Gelir (₺)",   value: revenueTotal.toLocaleString("tr"), icon: CheckCircle2, color: "text-green-600",  bg: "bg-green-50"  },
+    {
+      label: "Bugünkü Randevu",
+      value: todayApps.length,
+      icon: Calendar,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+    },
+    {
+      label: "Bu Hafta",
+      value: weekApps.length,
+      icon: TrendingUp,
+      color: "text-indigo-600",
+      bg: "bg-indigo-50",
+    },
+    {
+      label: "Aktif Personel",
+      value: staffCount,
+      icon: Users,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+    },
+    {
+      label: "Toplam Gelir (₺)",
+      value: revenueTotal.toLocaleString("tr"),
+      icon: CheckCircle2,
+      color: "text-green-600",
+      bg: "bg-green-50",
+    },
   ];
 
   return (
@@ -70,7 +98,9 @@ export default async function RandevuPage({ params }: Props) {
             <Scissors className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Randevu Modülü</h1>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Randevu Modülü
+            </h1>
             <p className="text-slate-500 text-sm">{tenant?.name}</p>
           </div>
         </div>
@@ -98,8 +128,13 @@ export default async function RandevuPage({ params }: Props) {
       {/* İstatistikler */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border border-slate-200 p-4">
-            <div className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center mb-3`}>
+          <div
+            key={s.label}
+            className="bg-white rounded-xl border border-slate-200 p-4"
+          >
+            <div
+              className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center mb-3`}
+            >
               <s.icon className={`w-5 h-5 ${s.color}`} />
             </div>
             <p className="text-2xl font-bold text-slate-900">{s.value}</p>
@@ -111,11 +146,41 @@ export default async function RandevuPage({ params }: Props) {
       {/* Hızlı Bağlantılar */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {[
-          { href: `${panelUrl}/appointments`, label: "Randevular",  icon: Calendar,  color: "text-blue-600",   bg: "hover:border-blue-200" },
-          { href: `${panelUrl}/staff`,        label: "Personel",    icon: Users,     color: "text-emerald-600",bg: "hover:border-emerald-200" },
-          { href: `${panelUrl}/services`,     label: "Hizmetler",   icon: Clock,     color: "text-amber-600",  bg: "hover:border-amber-200" },
-          { href: `${panelUrl}/reports`,      label: "Raporlar",    icon: TrendingUp,color: "text-indigo-600", bg: "hover:border-indigo-200" },
-          { href: `/${tenantSlug}/app/settings`,           label: "Ayarlar",     icon: Settings,  color: "text-slate-600",  bg: "hover:border-slate-300" },
+          {
+            href: `${panelUrl}/appointments`,
+            label: "Randevular",
+            icon: Calendar,
+            color: "text-blue-600",
+            bg: "hover:border-blue-200",
+          },
+          {
+            href: `${panelUrl}/staff`,
+            label: "Personel",
+            icon: Users,
+            color: "text-emerald-600",
+            bg: "hover:border-emerald-200",
+          },
+          {
+            href: `${panelUrl}/services`,
+            label: "Hizmetler",
+            icon: Clock,
+            color: "text-amber-600",
+            bg: "hover:border-amber-200",
+          },
+          {
+            href: `${panelUrl}/reports`,
+            label: "Raporlar",
+            icon: TrendingUp,
+            color: "text-indigo-600",
+            bg: "hover:border-indigo-200",
+          },
+          {
+            href: `/${tenantSlug}/app/settings`,
+            label: "Ayarlar",
+            icon: Settings,
+            color: "text-slate-600",
+            bg: "hover:border-slate-300",
+          },
         ].map((item) => (
           <Link
             key={item.href}
@@ -123,7 +188,9 @@ export default async function RandevuPage({ params }: Props) {
             className={`bg-white rounded-xl border border-slate-200 p-4 transition-colors ${item.bg} flex items-center gap-3 group`}
           >
             <item.icon className={`w-5 h-5 ${item.color}`} />
-            <span className="text-sm font-medium text-slate-700">{item.label}</span>
+            <span className="text-sm font-medium text-slate-700">
+              {item.label}
+            </span>
           </Link>
         ))}
       </div>
@@ -132,18 +199,31 @@ export default async function RandevuPage({ params }: Props) {
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <h2 className="font-semibold text-slate-900">Son Randevular</h2>
-          <Link href={`${panelUrl}/appointments`} className="text-xs text-blue-600 hover:underline">
+          <Link
+            href={`${panelUrl}/appointments`}
+            className="text-xs text-blue-600 hover:underline"
+          >
             Tümünü gör →
           </Link>
         </div>
         <table className="w-full text-sm">
           <thead className="bg-slate-50 border-b border-slate-100">
             <tr>
-              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">Tarih / Saat</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">Müşteri</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">Hizmet</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">Personel</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">Durum</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">
+                Tarih / Saat
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">
+                Müşteri
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">
+                Hizmet
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">
+                Personel
+              </th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-slate-500">
+                Durum
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
@@ -156,18 +236,35 @@ export default async function RandevuPage({ params }: Props) {
               </tr>
             ) : (
               recent.map((a) => {
-                const s = STATUS_LABELS[a.status] ?? { label: a.status, cls: "bg-slate-100 text-slate-600" };
+                const s = STATUS_LABELS[a.status] ?? {
+                  label: a.status,
+                  cls: "bg-slate-100 text-slate-600",
+                };
                 return (
                   <tr key={a.id} className="hover:bg-slate-50">
                     <td className="px-5 py-3 text-slate-700">
-                      <p className="font-medium">{a.startTime ? format(a.startTime, "d MMM", { locale: tr }) : "—"}</p>
-                      <p className="text-xs text-slate-400">{a.startTime ? format(a.startTime, "HH:mm") : ""}</p>
+                      <p className="font-medium">
+                        {a.startTime
+                          ? format(a.startTime, "d MMM", { locale: tr })
+                          : "—"}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {a.startTime ? format(a.startTime, "HH:mm") : ""}
+                      </p>
                     </td>
-                    <td className="px-5 py-3 text-slate-700">{a.customerName}</td>
-                    <td className="px-5 py-3 text-slate-600">{a.service.name}</td>
+                    <td className="px-5 py-3 text-slate-700">
+                      {a.customerName}
+                    </td>
+                    <td className="px-5 py-3 text-slate-600">
+                      {a.service.name}
+                    </td>
                     <td className="px-5 py-3 text-slate-600">{a.staff.name}</td>
                     <td className="px-5 py-3">
-                      <span className={`text-xs rounded-full px-2 py-0.5 font-medium ${s.cls}`}>{s.label}</span>
+                      <span
+                        className={`text-xs rounded-full px-2 py-0.5 font-medium ${s.cls}`}
+                      >
+                        {s.label}
+                      </span>
                     </td>
                   </tr>
                 );
