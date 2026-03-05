@@ -1,0 +1,2 @@
+# Auth
+src/auth.config.ts ve src/auth.ts dosyaları kimlik doğrulama ve yetkilendirme işlemlerini yürütür. Ortak middleware entegrasyonu src/middleware.ts ile sağlanır. JWT, session veya custom token tabanlı mekanizma kullanılabilir. Demo için `src/pages/api/demo-auth.ts` dosyası eklenmiştir.
