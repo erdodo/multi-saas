@@ -1,0 +1,2 @@
+- [ ] Tenant management repository/service
+- [ ] Authentication/Session base
