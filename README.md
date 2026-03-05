@@ -1,87 +1,42 @@
-# Multi-Tenant SaaS Platform (Core Repository)
+# multi-saas
 
-Bu döküman, birden fazla alt modüle sahip, geniş çaplı ve multi-tenant (çoklu kiracı) mimarisinde çalışacak SaaS projesinin ana reposunun mimarisini ve gereksinimlerini tanımlar.
+Modüler SaaS altyapısı.
 
-## 🏗️ Mimari ve Teknoloji Yığını
+## Proje Yapısı
 
-- **Core Framework:** Next.js (App Router, React)
-- **Veritabanı ORM:** Prisma
-- **İlk Aşama Veritabanı:** SQLite
-- **Hedef Veritabanı:** PostgreSQL
-- **Uygulama Tipi:** PWA (Progressive Web App) - Native mobil uygulama hissiyatı.
-- **Temel Konsept:** Ana repoda merkezi kimlik doğruluğu (Auth), setup akışı, profil ve tenant (işletme) yönetimi bulunur. Tüm ortak müşteri verileri bu repoda tutulur.
+```
+modules/
+  core/          # Tenant yönetimi, kullanıcı-oturum ve çekirdek veri mantığı
+  frontend/      # Next.js tabanlı çoklu tenant frontend kodları
+  db/            # Prisma config, migration ve seed işlemleri
+  integrations/  # Vercel ayarları, .env ve entegrasyon scriptleri
+  utils/         # Ortak konfigürasyon, tipler ve yardımcılar
+```
 
-## 📌 Ana Repo Görevleri ve Özellikleri
+### Ana Modüller
 
-### 1. Kimlik Doğrulama ve Kurulum (Auth & Setup)
+- **Core:** Tenant, kullanıcı, oturum ve temel iş mantığı. Ortak service/repository yapısı.
+- **Frontend:** Çoklu tenant Next.js UI, ortak layout ve authentication.
+- **Database & ORM:** Prisma şeması, migration ve seed scriptleri, multi-tenant veri tasarımı.
+- **Integrations:** Vercel deploy scriptleri, env örnekleri ve eksternal API entegrasyonları.
+- **Utilities/Shared:** Ortak fonksiyonlar, config, type tanımları.
 
-- `Login`, `Register` ve şifre sıfırlama ekranları.
-- Kullanıcı ilk kez kayıt olduğunda devreye giren **Setup (Kurulum)** sihirbazı.
-- İşletme bilgileri ve kullanılacak modüllerin (Randevu, Emlak vb.) seçimi.
+## Başlangıç
 
-### 2. Yönlendirme ve Dashboard Mimarisi
+```bash
+git clone https://github.com/erdodo/multi-saas.git
+cd multi-saas
+npm install
+```
 
-- Kullanıcının yetkisi tek bir modüle ise (örn. sadece berber), giriş sonrası doğrudan `/app/randevu` yönlendirmesi.
-- Kullanıcı birden fazla modüle sahipse, giriş sonrası `/app` dizininde modül seçebileceği bir **Grid Menü (Uygulamalarım)** ekranı.
+### Katkı İlkesine ve Issue/PR Şablonlarına Dikkat Ediniz!
 
-### 3. Progressive Web App (PWA)
+- Atomic commit, ayrı branch, TypeScript + ESLint standardı.
+- Modül/katmanda değişiklikler için [./modules/*](./modules/) dizilimine uyun.
+- Issue açarken & PR gönderirken `.github/ISSUE_TEMPLATE` ve `.github/PULL_REQUEST_TEMPLATE` kullanınız.
 
-- Offline erişim, caching ve icon/manifest ayarları.
-- Web üzerinden girildiğinde "Uygulamayı Yükle" veya "Ana Ekrana Ekle" benzeri zorunlu/hatırlatıcı popup entegrasyonu.
-- Mobil cihazlarda Play Store / App Store hissiyatı verecek native tasarım kalıpları.
-
-### 4. API & Webhook Altyapısı
-
-- Entegrasyonlar ve alt sistemlerin haberleşmesi için %100 API odaklı mimari.
-- Sisteme dışarıdan veya içeriden veri basılması/okunması için Webhook yönlendirmeleri.
-
-### 5. Ortak Veritabanı (Core Database)
-
-- **User / Tenant Modeli:** İşletmelerin ve işletme çalışanlarının hesapları.
-- **Customer (Müşteri) Modeli:** İşletmelerin sahip olduğu tüm müşteriler. Alt modüller bu ortak havuza bağlanır.
+## Mimariden Sorumlu Kişi
+Proje sorumlusu ve mimari desteği için iletişime geçebilirsiniz.
 
 ---
-
-## 🧩 Alt Modüller (Daha Sonra Geliştirilecek İçerikler)
-
-### A. Randevu Paneli (`/{slug}/randevu-panel`)
-
-- **Hedef Kitle:** Berberler, özel öğretmenler, diyetisyenler, doktorlar, güzellik salonları vb.
-- **Admin Panel Özellikleri:**
-  - Personel oluşturma/düzenleme (çalışma saatleri, hizmetler, takvim rengi)
-  - **Personel İzin Tanımlama:** Tarih aralığı + sebep ile izin ekleme ★
-  - **Mola Tanımlama:** Gün + saat aralığı bazında mola (ör. öğle arası). Bu saatler booking ekranında dolu görünür ★
-  - **Hızlı Hizmet Ekleme:** Personel eklerken hizmet yoksa inline dialog ile hızlı hizmet tanımlama ★
-  - Hizmet oluşturma/düzenleme (süre, fiyat, renk, buffer time)
-  - Takvim görünümü (günlük/haftalık), randevu durum yönetimi
-  - Müşteri listesi, raporlar, gelir takibi, tatil tanımlama
-  - Tenant ayarları (slot aralığı, min notice, booking window, otomatik onay)
-- **Müşteri Booking Özellikleri:**
-  - 4 adımlı akış: Hizmet → Uzman → Tarih&Saat → Bilgiler
-  - **Animasyonlu Takvim Seçici:** Aylık görünüm → güne tıklayınca gün görünümüne animasyonlu geçiş. Müsait saatler grid olarak listelenir ★
-  - **Telefon Maskesi:** `0XXX XXX XX XX` formatı otomatik uygulanır ★
-  - **E-posta Doğrulama:** `@` ve `.` kontrolü, blur'da anlık hata gösterimi ★
-  - **Randevu Onay Sayfası:** QR kod (server-side), paylaş (Web Share API), QR indir ★
-  - **Randevu Sorgulama:** Telefon numarası ile geçmiş randevulara erişim ★
-
-> 📄 Detaylı teknik dokümantasyon: [`docs/randevu-panel.md`](docs/randevu-panel.md)
-
-### B. Emlak Modülü (`/{slug}/emlak-panel`)
-
-- **Hedef Kitle:** Emlakçılar, mülk yöneticileri.
-- **Özellikler:** Satılık/Kiralık listelemesi, güncel ve geçmiş sözleşmelerin tutulması, kiracı profili. (İleride Sahibinden.com entegrasyonu).
-
-### C. Ders Takip Modülü (`/app/ders`)
-
-- **Hedef Kitle:** Özel eğitim merkezleri, dershaneler.
-- **Özellikler:** Öğrenci yoklama sistemi, ders saati bildirimleri, finansal takip ve öğrenci gelişim takip grafikleri.
-
----
-
-## 🚀 Geliştirme Yol Haritası (Roadmap)
-
-1. [ ] Next.js projesinin PWA desteğiyle ayağa kaldırılması.
-2. [ ] Prisma'nın SQLite ile yapılandırılması. `User`, `Tenant`, `Module` ve `Customer` şemalarının yazılması.
-3. [ ] Kimlik doğrulama sisteminin (Auth) ve Kurulum (Setup) ekranlarının geliştirilmesi.
-4. [ ] Grid Layout (Dashboard) ve modül tabanlı URL yönlendirmelerinin (Routing) inşası.
-5. [ ] Ortak API uçlarının (İşletme ve Müşteri yönetimi) yazılması ve Webhook temelinin atılması.
+Detaylar [CONTRIBUTING.md](modules/core/CONTRIBUTING.md) ve her modülün kendi README'sinde.
