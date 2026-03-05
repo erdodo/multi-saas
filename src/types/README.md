@@ -1,0 +1,2 @@
+# Types
+Bu klasörde uygulama genelinde kullanılan TypeScript arayüzleri (interface) ve tip tanımlamaları tutulur. Modüller kendi özel tiplerini (ör: Appointment, User, SaasConfig vs) buraya ekleyebilir.
