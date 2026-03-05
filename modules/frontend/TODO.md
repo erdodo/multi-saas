@@ -1,0 +1,2 @@
+- [ ] Next.js page/api organization
+- [ ] Shared components/layouts
