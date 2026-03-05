@@ -1,0 +1,2 @@
+# Prisma Migrations
+Bu klasör, veri tabanı şeması değişikliklerinin zaman damgalı migration kayıtlarını saklar. Migration işlemleri otomatik ve manuel olarak takip edilir. Her migration bir versiyon kaydıdır.
