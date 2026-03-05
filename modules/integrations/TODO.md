@@ -1,0 +1,3 @@
+- [ ] Vercel deployment settings
+- [ ] .env example config
+- [ ] 3rd party integration scripts
