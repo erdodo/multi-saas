@@ -1,0 +1,3 @@
+- [ ] Prisma config and schema review
+- [ ] Migration and seed scripts
+- [ ] Multi-tenant database design
