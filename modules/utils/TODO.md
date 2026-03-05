@@ -1,0 +1,3 @@
+- [ ] Shared config
+- [ ] Helper functions
+- [ ] TypeScript types
