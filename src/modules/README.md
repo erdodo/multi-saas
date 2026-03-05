@@ -1,0 +1,2 @@
+# Modules
+Tüm SaaS uygulama modülleri ve işlevleri bu klasörde organize edilmiştir. Her alt modül (ör: randevu, emlak, appointment, saas) kendi API ve uygulama içeriğine sahiptir. İç klasörler ve açıklama dosyaları ile modüller bağımsız ve ölçeklenebilir şekilde ayrıştırılmıştır.
